@@ -1034,61 +1034,17 @@
     <!-- LOGIKA JAVASCRIPT APLIKASI (INTEGRASI SUPABASE) -->
     <!-- ========================================== -->
     <script>
-        /*
-         ========================================================================
-         SUPABASE POSTGRESQL TABLE SCHEMAS (Copy-Paste ke SQL Editor Supabase Anda)
-         ========================================================================
-         
-         create table public.configs (
-           key text primary key,
-           value jsonb not null
-         );
-         
-         create table public.products (
-           id text primary key,
-           name text not null,
-           category text not null,
-           price numeric not null,
-           image text,
-           "desc" text,
-           stocks jsonb default '{}'::jsonb
-         );
-         
-         create table public.addons (
-           id text primary key,
-           name text not null,
-           price numeric not null,
-           image text,
-           stocks jsonb default '{}'::jsonb
-         );
-         
-         create table public.logs (
-           id text primary key,
-           raw_time bigint not null,
-           timestamp text not null,
-           username text not null,
-           action text not null
-         );
-         
-         --尊 Aktifkan Realtime Replication untuk keempat tabel:
-         alter publish realtime add table public.configs;
-         alter publish realtime add table public.products;
-         alter publish realtime add table public.addons;
-         alter publish realtime add table public.logs;
-         ========================================================================
-        */
-
-        // Deklarasi Global Client Supabase
         let supabaseClient = null;
 
         // ========================================================================
         // KREDENSIAL SUPABASE ANDA
         // ========================================================================
-        // PENTING: Paste API Key LENGKAP Anda di bawah ini (yang disalin lewat tombol copy).
-        // Jangan gunakan kode terpotong yang berakhiran "..."
+        // PENTING: Gunakan Publishable Key yang disalin utuh lewat tombol copy.
+        // Jika kode di bawah ini terpotong (misal berakhiran "..."), sistem akan
+        // otomatis beralih ke Mode Demo Lokal agar aplikasi tetap bisa ditinjau.
         // ========================================================================
         const SUPABASE_URL = 'https://mnhwkphtdhnlconkvlbz.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_XldfAQzhv0sAw-bohLI5EQ_GpJbR'; // <-- PASTE KEY LENGKAP ANDA DI SINI
+        const SUPABASE_ANON_KEY = 'sb_publishable_XldfAQzhv0sAw-bohLI5EQ_GpJbR7TX'; // <-- PASTE KEY LENGKAP UTUH DI SINI
 
         // Setelan Dasar WA & Logo Bawaan
         let dbWaNumber = "6281999340111";
@@ -1296,7 +1252,13 @@
 
         function initSupabaseConnection() {
             try {
-                if (!SUPABASE_URL || SUPABASE_URL.includes("your-project-id") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 50) {
+                // Mendeteksi jika API Key terpotong/placeholder
+                const isPlaceholderKey = !SUPABASE_ANON_KEY || 
+                                         SUPABASE_ANON_KEY.includes('your-') || 
+                                         SUPABASE_ANON_KEY.includes('...') || 
+                                         SUPABASE_ANON_KEY.length < 40;
+
+                if (isPlaceholderKey) {
                     console.warn("Katalog berjalan offline lokal. Silakan isi URL & KEY Supabase lengkap Anda.");
                     showToast("Supabase belum terkonfigurasi. Berjalan dalam mode demo lokal.", "warning");
                     return;
@@ -1322,6 +1284,15 @@
 
         function setupSupabaseRealtime() {
             if (!supabaseClient) return;
+
+            try {
+                // Lakukan uji coba pembuatan koneksi WebSocket untuk memeriksa keamanan sandbox
+                const testWs = new WebSocket('wss://' + new URL(SUPABASE_URL).hostname);
+                testWs.close();
+            } catch (err) {
+                console.warn("WebSocket diblokir oleh sandbox Canvas. Fitur realtime dinonaktifkan, beralih ke mode manual.");
+                return; // Batalkan inisialisasi jika tidak diizinkan oleh Iframe sandbox
+            }
 
             try {
                 // Berlangganan perubahan tabel Config secara aman
@@ -1566,232 +1537,6 @@
                 }
             } catch (err) {
                 console.warn("Gagal menarik logs dari Supabase (Menggunakan Data Lokal).");
-            }
-        }
-
-        function setupSupabaseRealtime() {
-            if (!supabaseClient) return;
-
-            // Berlangganan perubahan tabel Config
-            supabaseClient
-                .channel('realtime-configs')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'configs' }, () => {
-                    fetchConfigFromSupabase();
-                })
-                .subscribe();
-
-            // Berlangganan perubahan tabel Products (Katalog Menu & Stok)
-            supabaseClient
-                .channel('realtime-products')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
-                    fetchProductsFromSupabase();
-                })
-                .subscribe();
-
-            // Berlangganan perubahan tabel Addons (Pop-up Upsell)
-            supabaseClient
-                .channel('realtime-addons')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'addons' }, () => {
-                    fetchAddonsFromSupabase();
-                })
-                .subscribe();
-
-            // Berlangganan perubahan tabel Audit Logs
-            supabaseClient
-                .channel('realtime-logs')
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'logs' }, () => {
-                    fetchLogsFromSupabase();
-                })
-                .subscribe();
-        }
-
-        async function fetchConfigFromSupabase() {
-            if (!supabaseClient) return;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('configs')
-                    .select('value')
-                    .eq('key', 'shop_config')
-                    .single();
-
-                if (error) throw error;
-                if (data && data.value) {
-                    const val = data.value;
-                    dbWaNumber = val.waNumber || "6281999340111";
-                    dbLogo = val.logo || "image_d2cc87.png";
-                    dbOperatingHours = val.operatingHours || "Buka Setiap Hari (08.00 - 21.00 WITA)";
-                    dbCentralAddress = val.centralAddress || "Denpasar, Bali, Indonesia";
-                    dbBranches = val.branches || [...DEFAULT_BRANCHES];
-                    dbBranchDetails = val.branchDetails || { ...DEFAULT_BRANCH_DETAILS };
-                    dbPasscodes = val.passcodes || { ...DEFAULT_PASSCODES };
-                    dbCategories = val.categories || [...DEFAULT_CATEGORIES];
-
-                    // Simpan cadangan di LocalStorage
-                    localStorage.setItem('puding_logo', dbLogo);
-                    localStorage.setItem('puding_wa_number', dbWaNumber);
-                    localStorage.setItem('puding_operating_hours', dbOperatingHours);
-                    localStorage.setItem('puding_central_address', dbCentralAddress);
-                    localStorage.setItem('puding_branches', JSON.stringify(dbBranches));
-                    localStorage.setItem('puding_branch_details', JSON.stringify(dbBranchDetails));
-                    localStorage.setItem('puding_passcodes', JSON.stringify(dbPasscodes));
-                    localStorage.setItem('puding_categories', JSON.stringify(dbCategories));
-                    
-                    updateLogoElementsOnUI();
-                    renderAllData();
-                }
-            } catch (err) {
-                console.warn("Menggunakan config lokal karena config cloud belum tersedia:", err.message);
-                saveConfigToSupabase(); // Seeding config awal otomatis ke Supabase
-            }
-        }
-
-        async function saveConfigToSupabase() {
-            if (!supabaseClient) return;
-            try {
-                const { error } = await supabaseClient
-                    .from('configs')
-                    .upsert({
-                        key: 'shop_config',
-                        value: {
-                            waNumber: dbWaNumber,
-                            logo: dbLogo,
-                            operatingHours: dbOperatingHours,
-                            centralAddress: dbCentralAddress,
-                            branches: dbBranches,
-                            branchDetails: dbBranchDetails,
-                            passcodes: dbPasscodes,
-                            categories: dbCategories
-                        }
-                    });
-                if (error) throw error;
-            } catch (err) {
-                console.error("Supabase gagal mencatat Config:", err);
-            }
-        }
-
-        async function fetchProductsFromSupabase() {
-            if (!supabaseClient) return;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('products')
-                    .select('*');
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    dbProducts = data;
-                    localStorage.setItem('puding_products_db', JSON.stringify(dbProducts));
-                    renderAllData();
-                } else {
-                    seedDefaultProductsToSupabase();
-                }
-            } catch (err) {
-                console.error("Gagal menarik produk dari Supabase:", err);
-            }
-        }
-
-        async function saveProductToSupabase(product) {
-            if (!supabaseClient) return;
-            try {
-                const { error } = await supabaseClient
-                    .from('products')
-                    .upsert({
-                        id: product.id,
-                        name: product.name,
-                        category: product.category,
-                        price: product.price,
-                        image: product.image,
-                        desc: product.desc,
-                        stocks: product.stocks
-                    });
-                if (error) throw error;
-            } catch (err) {
-                console.error("Supabase gagal menyimpan produk:", err);
-            }
-        }
-
-        async function deleteProductFromSupabase(productId) {
-            if (!supabaseClient) return;
-            try {
-                const { error } = await supabaseClient
-                    .from('products')
-                    .delete()
-                    .eq('id', productId);
-                if (error) throw error;
-            } catch (err) {
-                console.error("Supabase gagal menghapus produk:", err);
-            }
-        }
-
-        async function fetchAddonsFromSupabase() {
-            if (!supabaseClient) return;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('addons')
-                    .select('*');
-                if (error) throw error;
-                if (data && data.length > 0) {
-                    dbAddons = data;
-                    localStorage.setItem('puding_addons', JSON.stringify(dbAddons));
-                    renderAllData();
-                } else {
-                    seedDefaultAddonsToSupabase();
-                }
-            } catch (err) {
-                console.error("Gagal menarik addons dari Supabase:", err);
-            }
-        }
-
-        async function saveAddonToSupabase(addon) {
-            if (!supabaseClient) return;
-            try {
-                const { error } = await supabaseClient
-                    .from('addons')
-                    .upsert({
-                        id: addon.id,
-                        name: addon.name,
-                        price: addon.price,
-                        image: addon.image,
-                        stocks: addon.stocks
-                    });
-                if (error) throw error;
-            } catch (err) {
-                console.error("Supabase gagal menyimpan addon:", err);
-            }
-        }
-
-        async function deleteAddonFromSupabase(addonId) {
-            if (!supabaseClient) return;
-            try {
-                const { error } = await supabaseClient
-                    .from('addons')
-                    .delete()
-                    .eq('id', addonId);
-                if (error) throw error;
-            } catch (err) {
-                console.error("Supabase gagal menghapus addon:", err);
-            }
-        }
-
-        async function fetchLogsFromSupabase() {
-            if (!supabaseClient) return;
-            try {
-                const { data, error } = await supabaseClient
-                    .from('logs')
-                    .select('*')
-                    .order('raw_time', { ascending: false })
-                    .limit(50);
-                if (error) throw error;
-                if (data) {
-                    dbLogs = data.map(log => ({
-                        rawTime: log.raw_time,
-                        timestamp: log.timestamp,
-                        user: log.username,
-                        action: log.action
-                    }));
-                    localStorage.setItem('puding_logs', JSON.stringify(dbLogs));
-                    renderActivityLogs();
-                }
-            } catch (err) {
-                console.error("Gagal menarik logs dari Supabase:", err);
             }
         }
 
