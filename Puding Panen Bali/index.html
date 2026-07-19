@@ -1070,7 +1070,7 @@
            action text not null
          );
          
-         -- Aktifkan Realtime Replication untuk keempat tabel:
+         --尊 Aktifkan Realtime Replication untuk keempat tabel:
          alter publish realtime add table public.configs;
          alter publish realtime add table public.products;
          alter publish realtime add table public.addons;
@@ -1080,6 +1080,15 @@
 
         // Deklarasi Global Client Supabase
         let supabaseClient = null;
+
+        // ========================================================================
+        // KREDENSIAL SUPABASE ANDA
+        // ========================================================================
+        // PENTING: Paste API Key LENGKAP Anda di bawah ini (yang disalin lewat tombol copy).
+        // Jangan gunakan kode terpotong yang berakhiran "..."
+        // ========================================================================
+        const SUPABASE_URL = 'https://mnhwkphtdhnlconkvlbz.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_XldfAQzhv0sAw-bohLI5EQ_GpJbR'; // <-- PASTE KEY LENGKAP ANDA DI SINI
 
         // Setelan Dasar WA & Logo Bawaan
         let dbWaNumber = "6281999340111";
@@ -1287,18 +1296,15 @@
 
         function initSupabaseConnection() {
             try {
-                // SUNTING KREDENSIAL SUPABASE ANDA DI SINI
-                const SUPABASE_URL = 'https://mnhwkphtdhnlconkvlbz.supabase.co';
-                const SUPABASE_ANON_KEY = 'sb_publishable_XldfAQzhv0sAw-bohLI5EQ_GpJbR';
-
-                if (SUPABASE_URL.includes("your-project-id") || SUPABASE_ANON_KEY.includes("your-actual-anon")) {
-                    console.warn("Katalog berjalan offline lokal. Silakan isi URL & Key Supabase Anda.");
+                if (!SUPABASE_URL || SUPABASE_URL.includes("your-project-id") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.length < 50) {
+                    console.warn("Katalog berjalan offline lokal. Silakan isi URL & KEY Supabase lengkap Anda.");
+                    showToast("Supabase belum terkonfigurasi. Berjalan dalam mode demo lokal.", "warning");
                     return;
                 }
 
                 // Inisialisasi Klien Supabase secara global
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log("Koneksi Supabase Sukses Terhubung!");
+                console.log("Mencoba menghubungkan ke Supabase Cloud...");
                 
                 // Fetch data awal dari Cloud Supabase
                 fetchConfigFromSupabase();
@@ -1310,7 +1316,256 @@
                 setupSupabaseRealtime();
             } catch (err) {
                 console.error("Gagal menyambung ke Supabase client:", err);
-                showToast("Koneksi Supabase gagal. Mode offline lokal aktif.", "warning");
+                showToast("Gagal tersambung ke database. Berjalan dalam mode demo lokal.", "warning");
+            }
+        }
+
+        function setupSupabaseRealtime() {
+            if (!supabaseClient) return;
+
+            try {
+                // Berlangganan perubahan tabel Config secara aman
+                const configChannel = supabaseClient
+                    .channel('realtime-configs')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'configs' }, () => {
+                        fetchConfigFromSupabase();
+                    });
+
+                configChannel.subscribe((status, err) => {
+                    if (status === 'CHANNEL_ERROR' || err) {
+                        console.warn("WebSocket Realtime diblokir oleh Canvas Sandbox. Fitur Realtime dinonaktifkan.");
+                        // Batalkan subskripsi agar tidak melempar global SecurityError di Canvas
+                        configChannel.unsubscribe();
+                    }
+                });
+
+                // Berlangganan perubahan tabel Products secara aman
+                const productsChannel = supabaseClient
+                    .channel('realtime-products')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+                        fetchProductsFromSupabase();
+                    });
+
+                productsChannel.subscribe((status) => {
+                    if (status === 'CHANNEL_ERROR') productsChannel.unsubscribe();
+                });
+
+                // Berlangganan perubahan tabel Addons secara aman
+                const addonsChannel = supabaseClient
+                    .channel('realtime-addons')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'addons' }, () => {
+                        fetchAddonsFromSupabase();
+                    });
+
+                addonsChannel.subscribe((status) => {
+                    if (status === 'CHANNEL_ERROR') addonsChannel.unsubscribe();
+                });
+
+                // Berlangganan perubahan tabel Audit Logs secara aman
+                const logsChannel = supabaseClient
+                    .channel('realtime-logs')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'logs' }, () => {
+                        fetchLogsFromSupabase();
+                    });
+
+                logsChannel.subscribe((status) => {
+                    if (status === 'CHANNEL_ERROR') logsChannel.unsubscribe();
+                });
+
+            } catch (err) {
+                console.warn("Koneksi WebSocket dilarang di sandbox environment ini. Melanjutkan dalam mode normal.");
+            }
+        }
+
+        async function fetchConfigFromSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('configs')
+                    .select('value')
+                    .eq('key', 'shop_config')
+                    .single();
+
+                if (error) throw error;
+                if (data && data.value) {
+                    const val = data.value;
+                    dbWaNumber = val.waNumber || "6281999340111";
+                    dbLogo = val.logo || "image_d2cc87.png";
+                    dbOperatingHours = val.operatingHours || "Buka Setiap Hari (08.00 - 21.00 WITA)";
+                    dbCentralAddress = val.centralAddress || "Denpasar, Bali, Indonesia";
+                    dbBranches = val.branches || [...DEFAULT_BRANCHES];
+                    dbBranchDetails = val.branchDetails || { ...DEFAULT_BRANCH_DETAILS };
+                    dbPasscodes = val.passcodes || { ...DEFAULT_PASSCODES };
+                    dbCategories = val.categories || [...DEFAULT_CATEGORIES];
+
+                    // Simpan cadangan di LocalStorage
+                    localStorage.setItem('puding_logo', dbLogo);
+                    localStorage.setItem('puding_wa_number', dbWaNumber);
+                    localStorage.setItem('puding_operating_hours', dbOperatingHours);
+                    localStorage.setItem('puding_central_address', dbCentralAddress);
+                    localStorage.setItem('puding_branches', JSON.stringify(dbBranches));
+                    localStorage.setItem('puding_branch_details', JSON.stringify(dbBranchDetails));
+                    localStorage.setItem('puding_passcodes', JSON.stringify(dbPasscodes));
+                    localStorage.setItem('puding_categories', JSON.stringify(dbCategories));
+                    
+                    updateLogoElementsOnUI();
+                    renderAllData();
+                }
+            } catch (err) {
+                console.warn("Gagal memuat Config dari cloud (Menggunakan Data Lokal):", err.message);
+                if (err.message && err.message.includes("API key")) {
+                    showToast("API Key Supabase tidak valid. Berjalan dalam mode demo lokal.", "warning");
+                }
+            }
+        }
+
+        async function saveConfigToSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('configs')
+                    .upsert({
+                        key: 'shop_config',
+                        value: {
+                            waNumber: dbWaNumber,
+                            logo: dbLogo,
+                            operatingHours: dbOperatingHours,
+                            centralAddress: dbCentralAddress,
+                            branches: dbBranches,
+                            branchDetails: dbBranchDetails,
+                            passcodes: dbPasscodes,
+                            categories: dbCategories
+                        }
+                    });
+                if (error) throw error;
+            } catch (err) {
+                console.error("Supabase gagal mencatat Config:", err);
+            }
+        }
+
+        async function fetchProductsFromSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('*');
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    dbProducts = data;
+                    localStorage.setItem('puding_products_db', JSON.stringify(dbProducts));
+                    renderAllData();
+                } else {
+                    seedDefaultProductsToSupabase();
+                }
+            } catch (err) {
+                console.warn("Gagal menarik produk dari Supabase (Menggunakan Data Lokal).");
+            }
+        }
+
+        async function saveProductToSupabase(product) {
+            if (!supabaseClient) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('products')
+                    .upsert({
+                        id: product.id,
+                        name: product.name,
+                        category: product.category,
+                        price: product.price,
+                        image: product.image,
+                        desc: product.desc,
+                        stocks: product.stocks
+                    });
+                if (error) throw error;
+            } catch (err) {
+                console.error("Supabase gagal menyimpan produk:", err);
+            }
+        }
+
+        async function deleteProductFromSupabase(productId) {
+            if (!supabaseClient) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('products')
+                    .delete()
+                    .eq('id', productId);
+                if (error) throw error;
+            } catch (err) {
+                console.error("Supabase gagal menghapus produk:", err);
+            }
+        }
+
+        async function fetchAddonsFromSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('addons')
+                    .select('*');
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    dbAddons = data;
+                    localStorage.setItem('puding_addons', JSON.stringify(dbAddons));
+                    renderAllData();
+                } else {
+                    seedDefaultAddonsToSupabase();
+                }
+            } catch (err) {
+                console.warn("Gagal menarik addons dari Supabase (Menggunakan Data Lokal).");
+            }
+        }
+
+        async function saveAddonToSupabase(addon) {
+            if (!supabaseClient) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('addons')
+                    .upsert({
+                        id: addon.id,
+                        name: addon.name,
+                        price: addon.price,
+                        image: addon.image,
+                        stocks: addon.stocks
+                    });
+                if (error) throw error;
+            } catch (err) {
+                console.error("Supabase gagal menyimpan addon:", err);
+            }
+        }
+
+        async function deleteAddonFromSupabase(addonId) {
+            if (!supabaseClient) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('addons')
+                    .delete()
+                    .eq('id', addonId);
+                if (error) throw error;
+            } catch (err) {
+                console.error("Supabase gagal menghapus addon:", err);
+            }
+        }
+
+        async function fetchLogsFromSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('logs')
+                    .select('*')
+                    .order('raw_time', { ascending: false })
+                    .limit(50);
+                if (error) throw error;
+                if (data) {
+                    dbLogs = data.map(log => ({
+                        rawTime: log.raw_time,
+                        timestamp: log.timestamp,
+                        user: log.username,
+                        action: log.action
+                    }));
+                    localStorage.setItem('puding_logs', JSON.stringify(dbLogs));
+                    renderActivityLogs();
+                }
+            } catch (err) {
+                console.warn("Gagal menarik logs dari Supabase (Menggunakan Data Lokal).");
             }
         }
 
