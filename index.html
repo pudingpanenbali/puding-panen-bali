@@ -866,6 +866,12 @@
                             </div>
                         </div>
 
+                        <div class="relative">
+                            <label for="address-search-input" class="block text-[9px] font-bold text-brand-darkText/70 uppercase tracking-wider mb-1"><i class="fa-solid fa-magnifying-glass-location text-brand-gold"></i> Cari Alamat Lewat Peta</label>
+                            <input type="text" id="address-search-input" autocomplete="off" oninput="handleAddressSearchInput(this.value)" placeholder="Ketik nama jalan / area, lalu pilih dari daftar saran..." class="w-full px-3 py-2 bg-white border border-brand-sand rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-crimson/20 focus:border-brand-crimson text-xs">
+                            <div id="address-search-suggestions" class="hidden absolute z-30 left-0 right-0 mt-1 bg-white border border-brand-sand rounded-xl shadow-lg max-h-48 overflow-y-auto"></div>
+                        </div>
+
                         <div>
                             <label for="buyer-address" class="block text-[9px] font-bold text-brand-darkText/70 uppercase tracking-wider mb-1">Alamat Lengkap Pengantaran <span class="text-brand-crimson">*</span></label>
                             <textarea id="buyer-address" rows="2" placeholder="Tuliskan nama jalan, blok, nomor rumah, dan patokan..." class="w-full px-3 py-2 bg-brand-cream/10 border border-brand-sand rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-crimson/20 focus:border-brand-crimson"></textarea>
@@ -1430,6 +1436,42 @@
                 }
             } catch (err) {
                 console.warn("Gagal menarik produk dari Supabase (Menggunakan Data Lokal).");
+            }
+        }
+
+        // ==========================================
+        // SISTEM POS: SIMPAN PESANAN MASUK KE SUPABASE
+        // ==========================================
+        async function saveOrderToSupabase(orderData) {
+            if (!supabaseClient) {
+                showToast("Supabase belum terkonfigurasi, pesanan tidak tersimpan ke sistem POS (hanya terkirim via WhatsApp).", "warning");
+                return;
+            }
+            try {
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .insert({
+                        store: orderData.store,
+                        buyer_name: orderData.buyer_name,
+                        buyer_phone: orderData.buyer_phone,
+                        order_method: orderData.order_method,
+                        booking_type: orderData.booking_type,
+                        schedule_type: orderData.schedule_type,
+                        schedule_date: orderData.schedule_date,
+                        schedule_time: orderData.schedule_time,
+                        delivery_address: orderData.delivery_address,
+                        delivery_coords: orderData.delivery_coords,
+                        maps_link: orderData.maps_link,
+                        notes: orderData.notes,
+                        items: orderData.items,
+                        addons: orderData.addons,
+                        grand_total: orderData.grand_total,
+                        status: "Menunggu Konfirmasi"
+                    });
+                if (error) throw error;
+            } catch (err) {
+                console.error("Gagal menyimpan pesanan ke sistem POS:", err);
+                showToast("Pesanan terkirim via WhatsApp, tapi gagal tersimpan ke app POS (cek koneksi/tabel 'orders').", "warning");
             }
         }
 
@@ -2141,6 +2183,101 @@
                     showToast("Alamat diperbarui dari Google Maps.", "info");
                 }
             });
+        }
+
+        // ==========================================
+        // PENCARIAN ALAMAT (gratis via OpenStreetMap/Nominatim, tanpa API key)
+        // Catatan: Jika GOOGLE_MAPS_API_KEY nanti diisi, bagian pencarian ini
+        // tetap berjalan sebagai opsi gratis; link Google Maps tetap dibangun
+        // dari koordinat manapun yang aktif (Google atau Leaflet).
+        // ==========================================
+
+        let addressSearchDebounceTimer = null;
+
+        function handleAddressSearchInput(query) {
+            clearTimeout(addressSearchDebounceTimer);
+            const box = document.getElementById('address-search-suggestions');
+
+            if (!query || query.trim().length < 3) {
+                box.classList.add('hidden');
+                box.innerHTML = "";
+                return;
+            }
+
+            addressSearchDebounceTimer = setTimeout(() => {
+                searchAddressSuggestions(query.trim());
+            }, 450);
+        }
+
+        function searchAddressSuggestions(query) {
+            const box = document.getElementById('address-search-suggestions');
+            box.innerHTML = `<div class="p-3 text-[10px] text-brand-darkText/50 italic">Mencari alamat...</div>`;
+            box.classList.remove('hidden');
+
+            const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&countrycodes=id&q=${encodeURIComponent(query)}`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(results => renderAddressSuggestions(results))
+                .catch(err => {
+                    console.error("Gagal mencari alamat:", err);
+                    box.innerHTML = `<div class="p-3 text-[10px] text-red-600 italic">Gagal mencari alamat. Coba lagi atau geser pin peta manual.</div>`;
+                });
+        }
+
+        function renderAddressSuggestions(results) {
+            const box = document.getElementById('address-search-suggestions');
+
+            if (!results || results.length === 0) {
+                box.innerHTML = `<div class="p-3 text-[10px] text-brand-darkText/50 italic">Alamat tidak ditemukan. Coba kata kunci lain atau geser pin peta manual.</div>`;
+                return;
+            }
+
+            box.innerHTML = results.map(r => `
+                <button type="button" onclick='selectAddressSuggestion(${r.lat}, ${r.lon}, ${escJsAttr(r.display_name)})' class="w-full text-left px-3 py-2.5 text-[10px] hover:bg-brand-cream/50 border-b border-brand-sand/40 last:border-b-0 flex items-start gap-2">
+                    <i class="fa-solid fa-location-dot text-brand-crimson mt-0.5 shrink-0"></i>
+                    <span>${r.display_name}</span>
+                </button>
+            `).join('');
+        }
+
+        function selectAddressSuggestion(lat, lng, displayName) {
+            lat = parseFloat(lat);
+            lng = parseFloat(lng);
+
+            document.getElementById('buyer-address').value = displayName;
+            document.getElementById('buyer-coords').value = `${lat.toFixed(7)}, ${lng.toFixed(7)}`;
+            document.getElementById('address-search-input').value = "";
+            document.getElementById('address-search-suggestions').classList.add('hidden');
+            document.getElementById('address-search-suggestions').innerHTML = "";
+
+            if (activeMapEngine === "Google" && googleMap) {
+                const pos = { lat: lat, lng: lng };
+                googleMap.setCenter(pos);
+                googleMap.setZoom(16);
+                googleMarker.setPosition(pos);
+            } else if (leafletMap) {
+                leafletMap.setView([lat, lng], 16);
+                leafletMarker.setLatLng([lat, lng]);
+            }
+
+            showToast("Titik peta dipindahkan sesuai alamat yang dipilih. Anda tetap bisa geser pin untuk presisi.", "success");
+        }
+
+        // Aman-kan string agar bisa disisipkan sebagai argumen JS di dalam atribut onclick='...'
+        // (mencegah alamat/nama yang mengandung tanda kutip petik merusak HTML).
+        function escJsAttr(str) {
+            return JSON.stringify(str).replace(/'/g, "&#39;");
+        }
+
+        function buildGoogleMapsLink(coordsText) {
+            if (!coordsText) return "";
+            const parts = coordsText.split(",").map(s => s.trim());
+            if (parts.length !== 2) return "";
+            const lat = parseFloat(parts[0]);
+            const lng = parseFloat(parts[1]);
+            if (isNaN(lat) || isNaN(lng)) return "";
+            return `https://www.google.com/maps?q=${lat},${lng}`;
         }
 
         function toggleDeliveryFields() {
@@ -3297,7 +3434,7 @@
             pendingCheckoutEvent = null;
         }
 
-        function processActualCheckout(event, selectedAddons) {
+        async function processActualCheckout(event, selectedAddons) {
             const scheduleType = document.querySelector('input[name="order-schedule-type"]:checked').value;
             const method = document.querySelector('input[name="order-method"]:checked').value;
             const buyerName = document.getElementById('buyer-name').value.trim();
@@ -3315,18 +3452,24 @@
 
             let deliveryOrPickupText = "";
             let selfBookingMode = false;
+            const rawAddress = document.getElementById('buyer-address').value.trim();
+            const rawCoords = document.getElementById('buyer-coords').value.trim();
+            const mapsLink = buildGoogleMapsLink(rawCoords);
+            const rawBookingType = method === "Gojek / Grab Delivery" ? document.querySelector('input[name="delivery-booking"]:checked').value : "";
 
             if (method === "Gojek / Grab Delivery") {
-                const address = document.getElementById('buyer-address').value.trim();
-                const bookingType = document.querySelector('input[name="delivery-booking"]:checked').value;
-                
+                const address = rawAddress;
+                const bookingType = rawBookingType;
+
                 deliveryOrPickupText = `🚗 *Metode Layanan* : Delivery (Gojek / Grab)\n📍 *Alamat Lengkap* : ${address}\n📦 *Penyedia Kurir* : ${bookingType}`;
-                
+
                 if (bookingType === "Saya Pesan Sendiri") {
                     selfBookingMode = true;
                 } else {
-                    const coords = document.getElementById('buyer-coords').value.trim();
-                    deliveryOrPickupText += `\n🎯 *Koordinat GPS* : ${coords ? coords : 'Tidak Disertakan'}`;
+                    deliveryOrPickupText += `\n🎯 *Koordinat GPS* : ${rawCoords ? rawCoords : 'Tidak Disertakan'}`;
+                    if (mapsLink) {
+                        deliveryOrPickupText += `\n🗺️ *Buka di Google Maps* : ${mapsLink}`;
+                    }
                 }
             } else {
                 deliveryOrPickupText = `🏢 *Metode Layanan* : Takeaway (Ambil Sendiri di Toko)`;
@@ -3362,6 +3505,8 @@
 
             let currentItemIndex = shoppingCart.length;
 
+            const orderAddonsArr = [];
+
             dbAddons.forEach(addon => {
                 const addonQty = selectedAddons[addon.id] || 0;
                 if (addonQty > 0) {
@@ -3369,10 +3514,37 @@
                     grandTotal += addonSubtotal;
                     currentItemIndex++;
                     itemListText += `\n📦 *Item #${currentItemIndex}* : ${addon.name}\n🛒 *Kuantitas* : ${addonQty} Pcs\n💵 *Subtotal* : ${formatRupiah(addonSubtotal)}\n`;
+                    orderAddonsArr.push({ name: addon.name, qty: addonQty, price: addon.price, subtotal: addonSubtotal });
                 }
             });
 
-            const message = 
+            const orderItemsArr = shoppingCart.map(item => ({
+                name: item.name,
+                qty: item.quantity,
+                price: item.price,
+                subtotal: item.price * item.quantity
+            }));
+
+            // Kirim data pesanan ke Supabase supaya muncul & memicu notifikasi di app POS toko tujuan
+            await saveOrderToSupabase({
+                store: selectedStore,
+                buyer_name: buyerName,
+                buyer_phone: buyerPhone,
+                order_method: method,
+                booking_type: rawBookingType || null,
+                schedule_type: scheduleType,
+                schedule_date: scheduleType === "Terjadwal" ? document.getElementById('schedule-date').value : null,
+                schedule_time: scheduleType === "Terjadwal" ? document.getElementById('schedule-time').value : null,
+                delivery_address: method === "Gojek / Grab Delivery" ? rawAddress : null,
+                delivery_coords: method === "Gojek / Grab Delivery" ? rawCoords : null,
+                maps_link: method === "Gojek / Grab Delivery" ? (mapsLink || null) : null,
+                notes: notes,
+                items: orderItemsArr,
+                addons: orderAddonsArr,
+                grand_total: grandTotal
+            });
+
+            const message =
 `` + `🍮 *PESANAN BARU - PUDING PANEN BALI* 🍮
 -------------------------------------------
 
