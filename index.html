@@ -2106,7 +2106,55 @@
                 document.getElementById('buyer-coords').value = `${position.lat().toFixed(7)}, ${position.lng().toFixed(7)}`;
                 reverseGeocodeGoogle(position.lat(), position.lng());
             });
+
+            setupGooglePlacesAutocomplete();
         };
+
+        // Pencarian alamat & nama tempat ala Google Maps (mis. ketik "pu" -> muncul
+        // "Puding Panen Bali" beserta alamat lain yang cocok). Hanya aktif jika
+        // GOOGLE_MAPS_API_KEY sudah diisi; jika kosong, sistem otomatis memakai
+        // pencarian gratis via OpenStreetMap (lihat handleAddressSearchInput).
+        function setupGooglePlacesAutocomplete() {
+            const input = document.getElementById('address-search-input');
+            if (!input || typeof google === 'undefined' || !google.maps.places) return;
+
+            // Prioritaskan hasil di sekitar area operasional toko (Denpasar & sekitarnya)
+            const baliBounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng(-8.85, 115.05),
+                new google.maps.LatLng(-8.55, 115.35)
+            );
+
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                bounds: baliBounds,
+                componentRestrictions: { country: 'id' },
+                fields: ['geometry', 'formatted_address', 'name']
+            });
+            autocomplete.bindTo('bounds', googleMap);
+
+            autocomplete.addListener('place_changed', function () {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) {
+                    showToast("Tempat tidak ditemukan, coba pilih langsung dari daftar saran.", "warning");
+                    return;
+                }
+
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                const label = place.name && place.formatted_address && !place.formatted_address.startsWith(place.name)
+                    ? `${place.name}, ${place.formatted_address}`
+                    : (place.formatted_address || place.name);
+
+                document.getElementById('buyer-address').value = label;
+                document.getElementById('buyer-coords').value = `${lat.toFixed(7)}, ${lng.toFixed(7)}`;
+                input.value = "";
+
+                googleMap.setCenter(place.geometry.location);
+                googleMap.setZoom(16);
+                googleMarker.setPosition(place.geometry.location);
+
+                showToast("Titik peta dipindahkan sesuai tempat/alamat yang dipilih.", "success");
+            });
+        }
 
         function locateUserPosition() {
             if (!navigator.geolocation) {
@@ -2195,6 +2243,10 @@
         let addressSearchDebounceTimer = null;
 
         function handleAddressSearchInput(query) {
+            // Jika Google Maps API Key aktif, pencarian ditangani otomatis oleh
+            // Google Places Autocomplete (lihat setupGooglePlacesAutocomplete) di input yang sama.
+            if (activeMapEngine === "Google") return;
+
             clearTimeout(addressSearchDebounceTimer);
             const box = document.getElementById('address-search-suggestions');
 
