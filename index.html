@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- SEO & Social Meta Tags -->
     <title>Puding Panen Bali | Puding & Dessert Favorit Bali</title>
     <meta name="description" content="Puding Panen Bali offers traditional puddings, pudding boxes, drinks, brownies, and hampers for everyday treats, celebrations, gifting, and events since 1991.">
+    <meta name="keywords" content="Puding Bali, Puding Panen Bali, Puding Denpasar, Puding Box Bali, Hampers Bali, Traditional Pudding Bali, Dessert Bali">
+    <meta name="author" content="Puding Panen Bali">
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -19,15 +24,15 @@
                 extend: {
                     colors: {
                         brand: {
-                            ivory: '#FAF7F2',
-                            cream: '#F4EFE6',
-                            milk: '#FCFAF6',
-                            sand: '#E6DEC0',
-                            cocoa: '#2C1A14',
-                            charcoal: '#1C1917',
-                            caramel: '#C88A35',
-                            green: '#2E5A44',
-                            crimson: '#A8221E',
+                            ivory: '#FAF7F2',       // Warm Ivory background
+                            cream: '#F4EFE6',       // Soft Cream surface
+                            milk: '#FCFAF6',        // Clean card background
+                            sand: '#E6DEC0',        // Subtle border/divider
+                            cocoa: '#2C1A14',       // Deep Cocoa text
+                            charcoal: '#1C1917',    // Charcoal dark
+                            caramel: '#C88A35',     // Warm Caramel accent
+                            green: '#2E5A44',       // Soft Coconut Green
+                            crimson: '#A8221E',     // Heritage Brand Red
                             crimsonHover: '#8C1B18',
                             gold: '#D4AF37'
                         }
@@ -49,37 +54,54 @@
             -webkit-tap-highlight-color: transparent;
         }
         .font-serif { font-family: 'Playfair Display', serif; }
+
         .shadow-warm { box-shadow: 0 10px 30px -5px rgba(44, 26, 20, 0.05), 0 4px 12px -2px rgba(44, 26, 20, 0.03); }
         .shadow-warm-hover:hover { box-shadow: 0 20px 35px -10px rgba(44, 26, 20, 0.12), 0 8px 20px -4px rgba(44, 26, 20, 0.06); }
+
         ::-webkit-scrollbar { width: 7px; height: 7px; }
         ::-webkit-scrollbar-track { background: #FAF7F2; }
         ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 10px; }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease-out, opacity 0.25s ease-out;
+            opacity: 0;
+        }
+        .faq-answer.open {
+            max-height: 400px;
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-brand-crimson selection:text-white pb-20 lg:pb-0">
 
+    <!-- PROMOTION BANNER SYSTEM -->
     <div id="promo-banner" class="bg-brand-cocoa text-brand-ivory px-4 py-2.5 text-xs border-b border-brand-caramel/30 relative">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
             <div class="flex items-center gap-2 justify-center sm:justify-start">
-                <span class="bg-brand-caramel text-brand-cocoa text-[9px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider shrink-0">Promo Spesial</span>
+                <span id="promo-badge-label" class="bg-brand-caramel text-brand-cocoa text-[9px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider shrink-0">Promo Spesial</span>
                 <p class="font-medium">
-                    <strong class="font-bold text-brand-gold">BUY 8, GET 1 FREE!</strong> S&amp;K berlaku untuk varian Small Cup &amp; Big Cup di seluruh cabang Bali.
+                    <strong id="promo-headline-text" class="font-bold text-brand-gold">BUY 8, GET 1 FREE!</strong><span id="promo-detail-text"> S&amp;K berlaku untuk varian Small Cup &amp; Big Cup di seluruh cabang Bali.</span>
                 </p>
             </div>
             <div class="flex items-center gap-3 shrink-0 text-[11px]">
-                <span class="text-brand-ivory/70"><i class="fa-regular fa-clock text-brand-gold mr-1"></i> Berlaku s/d 31 Agu 2026</span>
+                <span class="text-brand-ivory/70"><i class="fa-regular fa-clock text-brand-gold mr-1"></i> <span id="promo-expiry-text">Berlaku s/d 31 Agu 2026</span></span>
                 <button onclick="dismissPromoBanner()" class="text-brand-ivory/60 hover:text-white p-1" title="Tutup Banner"><i class="fa-solid fa-xmark"></i></button>
             </div>
         </div>
     </div>
 
+    <!-- NAVIGATION HEADER -->
     <header class="sticky top-0 z-40 bg-brand-ivory/95 backdrop-blur-md border-b border-brand-sand/60 shadow-sm transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+            
             <a href="#home" onclick="resetToHome()" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 sm:w-11 sm:h-11 bg-brand-cream border border-brand-sand/80 rounded-xl p-1.5 flex items-center justify-center overflow-hidden shadow-inner transition-transform group-hover:scale-105">
-                    <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=200&auto=format&fit=crop" alt="Logo Puding Panen Bali" class="w-full h-full object-cover rounded-lg">
+                    <img src="https://placehold.co/150x150/A8221E/FFFFFF?text=PPB" id="header-logo-img" alt="Logo Puding Panen Bali" class="max-w-full max-h-full object-contain">
                 </div>
                 <div>
                     <span class="font-serif font-bold text-sm sm:text-base tracking-wide uppercase text-brand-cocoa block leading-none">Puding Panen Bali</span>
@@ -89,8 +111,13 @@
 
             <nav class="hidden md:flex items-center gap-6 text-xs font-semibold text-brand-cocoa/80">
                 <a href="#home" class="hover:text-brand-crimson transition-colors">Home</a>
+                <a href="#about" class="hover:text-brand-crimson transition-colors">About Us</a>
                 <a href="#puddings" class="hover:text-brand-crimson transition-colors">Menu Catalog</a>
+                <a href="#sizes" class="hover:text-brand-crimson transition-colors">Sizes</a>
+                <a href="#drinks" class="hover:text-brand-crimson transition-colors">Drinks &amp; Treats</a>
+                <a href="#gifting" class="hover:text-brand-crimson transition-colors">Hampers</a>
                 <a href="#stores" class="hover:text-brand-crimson transition-colors">Stores</a>
+                <a href="#faq" class="hover:text-brand-crimson transition-colors">FAQ</a>
             </nav>
 
             <div class="flex items-center gap-2">
@@ -100,7 +127,7 @@
                     <i class="fa-solid fa-chevron-down text-[10px] text-brand-cocoa/50 ml-1"></i>
                 </button>
 
-                <button onclick="openAdminGate()" class="p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold border border-brand-sand bg-brand-milk hover:bg-brand-cream text-brand-cocoa transition-all shadow-sm flex items-center gap-1.5">
+                <button onclick="openAdminGate()" class="p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold border border-brand-sand bg-brand-milk hover:bg-brand-cream text-brand-cocoa transition-all shadow-sm flex items-center gap-1.5" title="Panel Kelola Admin">
                     <i class="fa-solid fa-user-shield text-brand-caramel text-sm sm:text-xs"></i> 
                     <span class="hidden sm:inline">Kelola Admin</span>
                 </button>
@@ -112,11 +139,12 @@
                 </button>
 
                 <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl text-brand-cocoa hover:bg-brand-cream border border-brand-sand/60">
-                    <i class="fa-solid fa-bars text-lg"></i>
+                    <i class="fa-solid fa-bars text-lg" id="mobile-menu-icon"></i>
                 </button>
             </div>
         </div>
 
+        <!-- Mobile Drawer Navigation -->
         <div id="mobile-menu" class="hidden md:hidden border-t border-brand-sand/60 bg-brand-ivory px-4 py-4 space-y-3 text-xs font-medium">
             <div class="flex items-center justify-between p-2.5 bg-brand-cream rounded-xl border border-brand-sand mb-2" onclick="triggerStoreSelectionModal()">
                 <div class="flex items-center gap-2">
@@ -129,14 +157,22 @@
                 <span class="text-[10px] font-bold uppercase text-brand-caramel">Ganti <i class="fa-solid fa-arrows-rotate ml-1"></i></span>
             </div>
             <a href="#home" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-brand-cream font-semibold"><i class="fa-solid fa-house text-brand-caramel mr-2"></i> Beranda</a>
+            <a href="#about" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-brand-cream font-semibold"><i class="fa-solid fa-book-open text-brand-caramel mr-2"></i> About Us</a>
             <a href="#puddings" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-brand-cream font-semibold"><i class="fa-solid fa-cookie-bite text-brand-caramel mr-2"></i> Katalog Puding</a>
+            <a href="#sizes" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-brand-cream font-semibold"><i class="fa-solid fa-cubes text-brand-caramel mr-2"></i> Pilihan Ukuran</a>
+            <a href="#drinks" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-brand-cream font-semibold"><i class="fa-solid fa-glass-water text-brand-caramel mr-2"></i> Drinks &amp; Treats</a>
+            <a href="#gifting" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-brand-cream font-semibold"><i class="fa-solid fa-gift text-brand-caramel mr-2"></i> Hampers &amp; Gifting</a>
             <a href="#stores" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-brand-cream font-semibold"><i class="fa-solid fa-location-dot text-brand-caramel mr-2"></i> Lokasi Outlet Bali</a>
+            <a href="#faq" onclick="toggleMobileMenu()" class="block py-2 px-3 rounded-lg hover:bg-brand-cream font-semibold"><i class="fa-solid fa-circle-question text-brand-caramel mr-2"></i> FAQ &amp; Bantuan</a>
         </div>
     </header>
 
     <main class="flex-grow space-y-16 sm:space-y-24">
+
+        <!-- 1. HERO SECTION -->
         <section id="home" class="relative pt-6 pb-12 md:py-20 px-4 lg:px-8 max-w-7xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                
                 <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
                     <div class="inline-flex items-center gap-2 bg-brand-cream border border-brand-sand px-3.5 py-1.5 rounded-full shadow-sm">
                         <span class="w-2 h-2 bg-brand-crimson rounded-full"></span>
@@ -148,58 +184,382 @@
                     </h1>
 
                     <p class="text-sm sm:text-base text-brand-cocoa/80 font-normal leading-relaxed max-w-xl mx-auto lg:mx-0">
-                        Classic Indonesian puddings and desserts, handcrafted daily in Bali with pure ingredients, authentic recipes, and nostalgia.
+                        Classic Indonesian puddings and desserts, made for everyday moments, celebrations, and everything in between. Handcrafted daily in Bali with pure ingredients, authentic recipes, and nostalgia.
                     </p>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
                         <a href="#puddings" class="w-full sm:w-auto bg-brand-crimson hover:bg-brand-crimsonHover text-white px-7 py-3.5 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider shadow-warm transition-all text-center">
                             Explore Full Menu
                         </a>
+                        <a href="https://wa.me/6281999340111?text=Halo%20Puding%20Panen%20Bali,%20saya%20ingin%20tanya%20menu%20dan%20pemesanan" target="_blank" class="w-full sm:w-auto bg-brand-cream hover:bg-brand-sand/50 text-brand-cocoa border border-brand-sand px-7 py-3.5 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all text-center flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i> Order via WhatsApp
+                        </a>
+                    </div>
+
+                    <div class="pt-6 border-t border-brand-sand/60 grid grid-cols-3 gap-2 text-center lg:text-left">
+                        <div>
+                            <span class="block font-serif font-bold text-lg sm:text-xl text-brand-cocoa">100% Alami</span>
+                            <span class="text-[10px] sm:text-xs text-brand-cocoa/60 font-medium">Tanpa Pengawet Buatan</span>
+                        </div>
+                        <div>
+                            <span class="block font-serif font-bold text-lg sm:text-xl text-brand-cocoa">Resep 1991</span>
+                            <span class="text-[10px] sm:text-xs text-brand-cocoa/60 font-medium">Cita Rasa Otentik Bali</span>
+                        </div>
+                        <div>
+                            <span class="block font-serif font-bold text-lg sm:text-xl text-brand-cocoa">Fresh Daily</span>
+                            <span class="text-[10px] sm:text-xs text-brand-cocoa/60 font-medium">Diproduksi Setiap Hari</span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-5 relative">
-                    <div class="relative bg-brand-milk rounded-[28px] overflow-hidden border border-brand-sand/80 p-3 shadow-warm">
-                        <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=1000&auto=format&fit=crop" alt="Signature Pudding" class="w-full h-[360px] sm:h-[420px] object-cover rounded-[22px]">
+                    <div class="relative mx-auto max-w-md lg:max-w-none">
+                        <div class="absolute -inset-2 bg-gradient-to-tr from-brand-sand to-brand-cream rounded-[32px] rotate-2 opacity-70"></div>
+                        
+                        <div class="relative bg-brand-milk rounded-[28px] overflow-hidden border border-brand-sand/80 p-3 shadow-warm">
+                            <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=1000&auto=format&fit=crop" alt="Signature Pudding - Puding Panen Bali" class="w-full h-[360px] sm:h-[420px] object-cover rounded-[22px] hover:scale-105 transition-transform duration-700">
+                            
+                            <div class="absolute bottom-6 left-6 right-6 bg-brand-milk/95 backdrop-blur-md p-4 rounded-2xl border border-brand-sand/80 shadow-lg flex items-center justify-between">
+                                <div>
+                                    <span class="text-[9px] uppercase tracking-widest text-brand-caramel font-extrabold block">Favorit Pelanggan</span>
+                                    <h4 class="font-serif font-bold text-sm text-brand-cocoa">Puding Kelapa Muda &amp; Chocolate</h4>
+                                </div>
+                                <span class="bg-brand-crimson/10 text-brand-crimson text-xs font-extrabold px-2.5 py-1 rounded-lg">Rp 15.000~</span>
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 2. BRAND STORY -->
+        <section id="about" class="bg-brand-cream/60 py-16 sm:py-20 border-y border-brand-sand/50">
+            <div class="max-w-7xl mx-auto px-4 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                    
+                    <div class="md:col-span-5 relative">
+                        <div class="bg-brand-milk p-3 rounded-3xl border border-brand-sand shadow-warm rotate-1">
+                            <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=800&auto=format&fit=crop" alt="Made with Tradition" class="w-full h-80 sm:h-96 object-cover rounded-2xl">
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-7 space-y-4 text-center md:text-left">
+                        <span class="text-brand-caramel font-extrabold text-[10px] uppercase tracking-widest">Tradisi &amp; Warisan Rasa</span>
+                        <h2 class="text-2xl sm:text-4xl font-serif font-bold text-brand-cocoa leading-tight">
+                            Made with Tradition. <br class="hidden sm:inline"><span class="italic text-brand-crimson">Shared with Love.</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-brand-cocoa/80 leading-relaxed max-w-2xl">
+                            Puding Panen has been part of Bali's dessert tradition since 1991. We make familiar Indonesian puddings with authentic recipes, pure ingredients, and no artificial preservatives.
+                        </p>
+                        <p class="text-xs sm:text-sm text-brand-cocoa/80 leading-relaxed max-w-2xl">
+                            Dibuat dengan memadukan kelembutan tekstur agar-agar pilihan, santan kelapa murni Bali, gula aren asli, serta kakao dan bahan buah alami. Hasilnya adalah pencuci mulut bernuansa nostalgia hangat yang selalu dinanti seluruh keluarga.
+                        </p>
+                        <div class="pt-2">
+                            <a href="#stores" class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-crimson hover:text-brand-crimsonHover border-b border-brand-crimson pb-0.5">
+                                Kunjungi Outlet Kami <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
 
+        <!-- 3. CATALOG & MENU SECTION -->
         <section id="puddings" class="max-w-7xl mx-auto px-4 lg:px-8 space-y-8">
             <div class="text-center space-y-2 max-w-2xl mx-auto">
                 <span class="text-brand-caramel font-extrabold text-[10px] uppercase tracking-widest">Katalog Produk Lengkap</span>
                 <h2 class="text-2xl sm:text-4xl font-serif font-bold text-brand-cocoa">Our Puddings &amp; Desserts</h2>
+                <p class="text-xs sm:text-sm text-brand-cocoa/70">Pilih varian kesukaan Anda. Klik kartu produk untuk memilih porsi &amp; memasukkan ke keranjang.</p>
             </div>
 
+            <!-- Search & Filter Bar -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-brand-cream/50 p-3 sm:p-4 rounded-2xl border border-brand-sand/70">
-                <div id="category-tabs-container" class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto no-scrollbar pb-1 sm:pb-0"></div>
+                
+                <div id="category-tabs-container" class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto no-scrollbar pb-1 sm:pb-0">
+                    <!-- Tabs rendered via JS -->
+                </div>
+
                 <div class="relative w-full sm:w-64 shrink-0">
-                    <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Cari varian puding..." class="w-full bg-brand-milk border border-brand-sand/80 px-4 py-2 pl-9 rounded-xl text-xs font-medium text-brand-cocoa focus:outline-none focus:border-brand-crimson">
+                    <input type="text" id="search-input" onkeyup="filterProducts()" placeholder="Cari varian puding / rasa..." class="w-full bg-brand-milk border border-brand-sand/80 px-4 py-2 pl-9 rounded-xl text-xs font-medium text-brand-cocoa focus:outline-none focus:border-brand-crimson transition-all">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-brand-cocoa/40 text-xs"></i>
                 </div>
             </div>
 
-            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            <!-- INFO NOTICE -->
+            <div class="bg-brand-cream/50 border border-brand-sand/70 rounded-2xl p-4 text-[11px] text-brand-cocoa/75 leading-relaxed">
+                <span class="font-bold text-brand-caramel uppercase text-[10px] tracking-wider block mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Informasi Penting</span>
+                Harga puding belum termasuk fla &amp; kartu ucapan &middot; Puding box &amp; cup tahan 4-6 jam suhu ruang, fresh 1-2 hari dalam chiller &middot; Coconut Water Jelly tahan maks. 4 jam suhu ruang &middot; Puding Bulat perlu pre-order H-1 &middot; Pengiriman kurir wajib sertakan titik lokasi di Maps.
+            </div>
+
+            <!-- PRODUCT GRID -->
+            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Products dynamically rendered -->
+            </div>
         </section>
 
+        <!-- 4. PRODUCT SIZES SECTION -->
+        <section id="sizes" class="bg-brand-cream/40 py-16 border-y border-brand-sand/50">
+            <div class="max-w-7xl mx-auto px-4 lg:px-8 space-y-10">
+                <div class="text-center space-y-2 max-w-xl mx-auto">
+                    <span class="text-brand-caramel font-extrabold text-[10px] uppercase tracking-widest">Format Kemasan</span>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-brand-cocoa">Choose Your Size</h2>
+                    <p class="text-xs sm:text-sm text-brand-cocoa/70">Tersedia dalam berbagai porsi untuk dinikmati sendiri maupun bersama keluarga.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    
+                    <div class="bg-brand-milk p-6 rounded-2xl border border-brand-sand shadow-warm space-y-3 hover:border-brand-caramel transition-all">
+                        <div class="w-12 h-12 bg-brand-cream text-brand-crimson rounded-xl flex items-center justify-center font-serif font-bold text-lg border border-brand-sand">1x</div>
+                        <h3 class="font-serif font-bold text-lg text-brand-cocoa">Small Cup</h3>
+                        <p class="text-xs text-brand-cocoa/70 leading-relaxed">Porsi personal yang cocok untuk santap harian atau camilan sore hari.</p>
+                        <span class="block text-xs font-bold text-brand-crimson pt-2">Mulai Rp 15.000</span>
+                    </div>
+
+                    <div class="bg-brand-milk p-6 rounded-2xl border border-brand-sand shadow-warm space-y-3 hover:border-brand-caramel transition-all">
+                        <div class="w-12 h-12 bg-brand-cream text-brand-crimson rounded-xl flex items-center justify-center font-serif font-bold text-lg border border-brand-sand">2x</div>
+                        <h3 class="font-serif font-bold text-lg text-brand-cocoa">Big Cup</h3>
+                        <p class="text-xs text-brand-cocoa/70 leading-relaxed">Porsi lebih besar untuk kepuasan ekstra atau berbagi dengan kerabat.</p>
+                        <span class="block text-xs font-bold text-brand-crimson pt-2">Mulai Rp 25.000</span>
+                    </div>
+
+                    <div class="bg-brand-milk p-6 rounded-2xl border border-brand-sand shadow-warm space-y-3 hover:border-brand-caramel transition-all">
+                        <div class="w-12 h-12 bg-brand-cream text-brand-crimson rounded-xl flex items-center justify-center font-serif font-bold text-lg border border-brand-sand"><i class="fa-solid fa-box-open"></i></div>
+                        <h3 class="font-serif font-bold text-lg text-brand-cocoa">Pudding Box</h3>
+                        <p class="text-xs text-brand-cocoa/70 leading-relaxed">Paket boks isi varian kombinasi rasa favorit untuk oleh-oleh &amp; acara.</p>
+                        <span class="block text-xs font-bold text-brand-crimson pt-2">Mulai Rp 95.000</span>
+                    </div>
+
+                    <div class="bg-brand-milk p-6 rounded-2xl border border-brand-sand shadow-warm space-y-3 hover:border-brand-caramel transition-all">
+                        <div class="w-12 h-12 bg-brand-cream text-brand-crimson rounded-xl flex items-center justify-center font-serif font-bold text-lg border border-brand-sand"><i class="fa-solid fa-stroopwafel"></i></div>
+                        <h3 class="font-serif font-bold text-lg text-brand-cocoa">Mini Round / Birthday Cake</h3>
+                        <p class="text-xs text-brand-cocoa/70 leading-relaxed">Puding bentuk cetakan loyang cantik untuk perayaan ulang tahun &amp; syukuran.</p>
+                        <span class="block text-xs font-bold text-brand-crimson pt-2">Mulai Rp 45.000</span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. DRINKS & OTHER TREATS -->
+        <section id="drinks" class="bg-brand-cream/30 py-16 border-y border-brand-sand/50">
+            <div class="max-w-7xl mx-auto px-4 lg:px-8 space-y-10">
+                <div class="text-center space-y-2 max-w-xl mx-auto">
+                    <span class="text-brand-caramel font-extrabold text-[10px] uppercase tracking-widest">Pelengkap Manis</span>
+                    <h2 class="text-2xl sm:text-4xl font-serif font-bold text-brand-cocoa">Drinks &amp; Bakery</h2>
+                    <p class="text-xs sm:text-sm text-brand-cocoa/70">Nikmati ragam minuman jelly segar dan kue pencuci mulut olahan rumahan.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <div class="bg-brand-milk p-6 sm:p-8 rounded-3xl border border-brand-sand shadow-warm space-y-6">
+                        <div class="flex items-center gap-3 border-b border-brand-sand pb-4">
+                            <div class="w-10 h-10 bg-brand-cream rounded-xl flex items-center justify-center text-brand-green text-lg border border-brand-sand"><i class="fa-solid fa-glass-water"></i></div>
+                            <div>
+                                <h3 class="font-serif font-bold text-xl text-brand-cocoa">Refreshing Drinks</h3>
+                                <p class="text-xs text-brand-cocoa/60">Minuman jelly segar olahan bahan murni alami</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between gap-4 p-3 hover:bg-brand-cream/50 rounded-xl transition-colors">
+                                <div>
+                                    <h4 class="font-bold text-sm text-brand-cocoa">Lemongrass Jelly Drink</h4>
+                                    <p class="text-xs text-brand-cocoa/70">Segarnya serai murni alami berpadu kenyalnya jelly khas Bali.</p>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="block font-bold text-xs text-brand-crimson">Rp 15.000</span>
+                                    <button onclick="openSizeModal('p9')" class="text-[10px] font-extrabold uppercase text-brand-caramel hover:underline mt-1">+ Tambah</button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between gap-4 p-3 hover:bg-brand-cream/50 rounded-xl transition-colors">
+                                <div>
+                                    <h4 class="font-bold text-sm text-brand-cocoa">Coconut Water Jelly</h4>
+                                    <p class="text-xs text-brand-cocoa/70">Air kelapa murni dingin dengan potongan jelly lembut.</p>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="block font-bold text-xs text-brand-crimson">Rp 15.000</span>
+                                    <button onclick="openSizeModal('p10')" class="text-[10px] font-extrabold uppercase text-brand-caramel hover:underline mt-1">+ Tambah</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-milk p-6 sm:p-8 rounded-3xl border border-brand-sand shadow-warm space-y-6">
+                        <div class="flex items-center gap-3 border-b border-brand-sand pb-4">
+                            <div class="w-10 h-10 bg-brand-cream rounded-xl flex items-center justify-center text-brand-crimson text-lg border border-brand-sand"><i class="fa-solid fa-cake-candles"></i></div>
+                            <div>
+                                <h3 class="font-serif font-bold text-xl text-brand-cocoa">Cakes &amp; Treats</h3>
+                                <p class="text-xs text-brand-cocoa/60">Kue buatan rumah bertekstur lembut</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between gap-4 p-3 hover:bg-brand-cream/50 rounded-xl transition-colors">
+                                <div>
+                                    <h4 class="font-bold text-sm text-brand-cocoa">Signature Fudgy Brownies</h4>
+                                    <p class="text-xs text-brand-cocoa/70">Brownies cokelat panggang kaya rasa dengan kerak renyah.</p>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="block font-bold text-xs text-brand-crimson">Rp 45.000</span>
+                                    <button onclick="openSizeModal('p11')" class="text-[10px] font-extrabold uppercase text-brand-caramel hover:underline mt-1">+ Tambah</button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between gap-4 p-3 hover:bg-brand-cream/50 rounded-xl transition-colors">
+                                <div>
+                                    <h4 class="font-bold text-sm text-brand-cocoa">Pudding Cake Ulang Tahun</h4>
+                                    <p class="text-xs text-brand-cocoa/70">Kue puding lapis ulang tahun bertema spesial (Pre-Order).</p>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <span class="block font-bold text-xs text-brand-crimson">Rp 150.000~</span>
+                                    <button onclick="openSizeModal('p12')" class="text-[10px] font-extrabold uppercase text-brand-caramel hover:underline mt-1">+ Tambah</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. HAMPERS & GIFTING SECTION -->
+        <section id="gifting" class="bg-brand-cocoa text-brand-ivory py-16 sm:py-20 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <div class="lg:col-span-6 space-y-5 text-center lg:text-left">
+                        <span class="bg-brand-caramel/20 text-brand-gold text-[10px] font-extrabold uppercase px-3 py-1 rounded-full border border-brand-gold/30 inline-block">Hantaran Spesial Bali</span>
+                        <h2 class="text-3xl sm:text-5xl font-serif font-bold text-brand-ivory leading-tight">
+                            Something Sweet to <br><span class="italic text-brand-gold">Bring Along</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-brand-ivory/80 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                            From simple thank-yous to special celebrations, our puddings make an easy and thoughtful gift. Dikemas cantik dan siap memaniskan perayaan Hari Raya Galungan, Nyepi, Natal, hingga Tahun Baru.
+                        </p>
+                        <div class="pt-3">
+                            <a href="https://wa.me/6281999340111?text=Halo%20Puding%20Panen%20Bali,%20saya%20ingin%20tanya%20paket%20Hampers%20dan%20Gifting" target="_blank" class="bg-brand-gold hover:bg-yellow-600 text-brand-cocoa px-7 py-3.5 rounded-xl text-xs sm:text-sm font-extrabold uppercase tracking-wider inline-flex items-center gap-2 shadow-lg transition-all">
+                                <i class="fa-brands fa-whatsapp text-lg"></i> Tanya Paket Hampers
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <img src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=600&auto=format&fit=crop" alt="Hampers Puding" class="rounded-2xl border border-brand-sand/20 h-48 sm:h-64 w-full object-cover shadow-lg">
+                            <img src="https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=600&auto=format&fit=crop" alt="Gift Box Puding" class="rounded-2xl border border-brand-sand/20 h-48 sm:h-64 w-full object-cover shadow-lg mt-6">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. STORES / LOCATIONS -->
         <section id="stores" class="bg-brand-cream/40 py-16 border-y border-brand-sand/50">
             <div class="max-w-7xl mx-auto px-4 lg:px-8 space-y-10">
                 <div class="text-center space-y-2 max-w-xl mx-auto">
                     <span class="text-brand-caramel font-extrabold text-[10px] uppercase tracking-widest">Lokasi Outlet</span>
                     <h2 class="text-2xl sm:text-4xl font-serif font-bold text-brand-cocoa">Find Us in Bali</h2>
+                    <p class="text-xs sm:text-sm text-brand-cocoa/70">Singgah ke outlet resmi kami di Denpasar untuk langsung menikmati puding segar.</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="stores-grid-container"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="stores-grid-container">
+                    <!-- Stores rendered dynamically -->
+                </div>
             </div>
         </section>
+
+        <!-- 8. FAQ ACCORDION -->
+        <section id="faq" class="max-w-4xl mx-auto px-4 space-y-8">
+            <div class="text-center space-y-2">
+                <span class="text-brand-caramel font-extrabold text-[10px] uppercase tracking-widest">Pertanyaan Umum</span>
+                <h2 class="text-2xl sm:text-4xl font-serif font-bold text-brand-cocoa">Frequently Asked Questions</h2>
+            </div>
+
+            <div class="space-y-3">
+                <div class="bg-brand-milk border border-brand-sand rounded-2xl overflow-hidden shadow-sm">
+                    <button onclick="toggleFAQ(1)" class="w-full p-5 text-left font-serif font-bold text-sm sm:text-base text-brand-cocoa flex items-center justify-between gap-4">
+                        <span>Varian rasa apa saja yang selalu tersedia setiap hari?</span>
+                        <i class="fa-solid fa-plus text-brand-caramel text-xs transition-transform" id="faq-icon-1"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-xs text-brand-cocoa/80 leading-relaxed" id="faq-ans-1">
+                        Varian terfavorit kami seperti Kelapa Muda, Chocolate, Tape Hijau, Mango, dan Milk Chocolate diproduksi setiap hari. Varian lain tersedia sesuai stok harian outlet.
+                    </div>
+                </div>
+
+                <div class="bg-brand-milk border border-brand-sand rounded-2xl overflow-hidden shadow-sm">
+                    <button onclick="toggleFAQ(2)" class="w-full p-5 text-left font-serif font-bold text-sm sm:text-base text-brand-cocoa flex items-center justify-between gap-4">
+                        <span>Berapa daya tahan puding dan bagaimana cara penyimpanannya?</span>
+                        <i class="fa-solid fa-plus text-brand-caramel text-xs transition-transform" id="faq-icon-2"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-xs text-brand-cocoa/80 leading-relaxed" id="faq-ans-2">
+                        Karena tanpa bahan pengawet buatan, Puding Panen Bali bertahan hingga 3-4 hari jika disimpan rapat dalam kulkas/chiller (suhu 2-5°C). Hindari membiarkan di suhu ruang lebih dari 4 jam.
+                    </div>
+                </div>
+
+                <div class="bg-brand-milk border border-brand-sand rounded-2xl overflow-hidden shadow-sm">
+                    <button onclick="toggleFAQ(3)" class="w-full p-5 text-left font-serif font-bold text-sm sm:text-base text-brand-cocoa flex items-center justify-between gap-4">
+                        <span>Apakah bisa pesan untuk konsumsi acara / syukuran?</span>
+                        <i class="fa-solid fa-plus text-brand-caramel text-xs transition-transform" id="faq-icon-3"></i>
+                    </button>
+                    <div class="faq-answer px-5 pb-5 text-xs text-brand-cocoa/80 leading-relaxed" id="faq-ans-3">
+                        Sangat bisa! Kami menerima pemesanan jumlah besar untuk rapat kantor, nikahan, ulang tahun, dan perayaan keluarga. Disarankan order H-1 melalui WhatsApp.
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="bg-brand-cocoa text-brand-ivory border-t border-brand-sand/30 pt-12 pb-24 lg:pb-12 mt-20 text-center sm:text-left">
-        <div class="max-w-7xl mx-auto px-4 lg:px-8">
-            <p class="text-xs text-brand-ivory/60">&copy; 2026 Puding Panen Bali. All Rights Reserved.</p>
+    <!-- FOOTER -->
+    <footer class="bg-brand-cocoa text-brand-ivory border-t border-brand-sand/30 pt-12 pb-24 lg:pb-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 lg:px-8 space-y-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+                <div class="space-y-3 md:col-span-1">
+                    <div class="flex items-center gap-2.5 justify-center md:justify-start">
+                        <img src="https://placehold.co/100x100/A8221E/FFFFFF?text=PPB" alt="Logo Footer" class="w-9 h-9 object-contain rounded-lg">
+                        <span class="font-serif font-bold text-base uppercase tracking-wider text-brand-ivory">Puding Panen Bali</span>
+                    </div>
+                    <p class="text-xs text-brand-ivory/70 leading-relaxed">
+                        Traditional Indonesian Pudding &amp; Desserts handcrafted in Bali with love and heritage recipes since 1991.
+                    </p>
+                    <p class="text-xs text-brand-gold font-bold">
+                        <i class="fa-brands fa-instagram mr-1.5"></i> <a href="https://instagram.com/pudingpanenbali" target="_blank" class="hover:underline">@pudingpanenbali</a>
+                    </p>
+                </div>
+
+                <div class="space-y-2 text-xs text-brand-ivory/80">
+                    <span class="block font-bold uppercase tracking-wider text-brand-gold text-[10px] mb-1">Outlet Denpasar</span>
+                    <p>• Gatsu Tengah, Denpasar</p>
+                    <p>• Teuku Umar Barat, Denpasar</p>
+                    <p>• Tukad Yeh Aya (Renon), Denpasar</p>
+                </div>
+
+                <div class="space-y-2 text-xs text-brand-ivory/80">
+                    <span class="block font-bold uppercase tracking-wider text-brand-gold text-[10px] mb-1">Jam Operasional</span>
+                    <p><i class="fa-regular fa-clock text-brand-gold mr-1"></i> Buka Setiap Hari (08.00 - 21.00 WITA)</p>
+                    <p><i class="fa-brands fa-whatsapp text-emerald-500 mr-1"></i> WhatsApp: 081999340111</p>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    <span class="block font-bold uppercase tracking-wider text-brand-gold text-[10px]">Pemesanan Cepat</span>
+                    <p class="text-brand-ivory/70">Pesan langsung melalui katalog website ini dan kirim langsung ke WhatsApp toko.</p>
+                    <a href="#puddings" class="inline-block bg-brand-caramel hover:bg-yellow-600 text-brand-cocoa px-4 py-2 rounded-xl font-bold uppercase text-[10px] tracking-wider">
+                        Buka Katalog Now
+                    </a>
+                </div>
+            </div>
+
+            <div class="border-t border-brand-sand/20 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-brand-ivory/50 gap-2">
+                <p>&copy; 2026 Puding Panen Bali. All Rights Reserved.</p>
+                <p class="text-[10px]">Authentic · Warm · Nostalgic · Premium</p>
+            </div>
         </div>
     </footer>
 
+    <!-- STICKY MOBILE BOTTOM BAR -->
     <div class="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-brand-ivory/95 backdrop-blur-md border-t border-brand-sand/80 px-4 py-2.5 shadow-lg flex items-center justify-between gap-2">
         <div class="flex items-center gap-2">
             <button onclick="toggleCartDrawer()" class="relative bg-brand-cream border border-brand-sand p-2.5 rounded-xl text-brand-cocoa font-bold text-xs flex items-center gap-1">
@@ -217,18 +577,28 @@
     </div>
 
     <!-- MODAL: BRANCH SELECTOR -->
-    <div id="store-selector-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-cocoa/60 backdrop-blur-md hidden">
+    <div id="store-selector-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-cocoa/60 backdrop-blur-md">
         <div class="bg-brand-milk rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative border border-brand-sand text-center space-y-5">
-            <h3 class="text-xl font-serif font-bold text-brand-cocoa">Pilih Cabang Outlet</h3>
+            <div class="w-16 h-16 bg-brand-cream border border-brand-sand rounded-2xl p-2 flex items-center justify-center mx-auto shadow-inner">
+                <img src="https://placehold.co/150x150/A8221E/FFFFFF?text=PPB" alt="Logo" class="max-w-full max-h-full object-contain">
+            </div>
+            <div class="space-y-1.5">
+                <h3 class="text-xl sm:text-2xl font-serif font-bold text-brand-cocoa">Pilih Cabang Outlet</h3>
+                <p class="text-xs text-brand-cocoa/70 max-w-sm mx-auto leading-relaxed">
+                    Pilih lokasi outlet Puding Panen Bali terdekat dari lokasi Anda:
+                </p>
+            </div>
             <div id="store-options-container" class="space-y-2.5"></div>
+            <p class="text-[9px] text-brand-cocoa/40 uppercase tracking-widest font-extrabold">Est. 1991 • Bali, Indonesia</p>
         </div>
     </div>
 
-    <!-- MODAL: SIZE SELECTOR -->
+    <!-- MODAL: PRODUCT SIZE SELECTOR -->
     <div id="size-selector-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
         <div class="absolute inset-0 bg-brand-cocoa/60 backdrop-blur-sm" onclick="closeSizeModal()"></div>
         <div class="bg-brand-milk rounded-3xl max-w-sm w-full p-6 shadow-2xl relative z-10 border border-brand-sand space-y-4">
             <button onclick="closeSizeModal()" class="absolute top-4 right-4 text-brand-cocoa/50 hover:text-brand-cocoa p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
             <div class="flex items-center gap-3 border-b border-brand-sand/60 pb-3">
                 <img id="modal-size-prod-img" src="" class="w-12 h-12 object-cover rounded-xl border border-brand-sand">
                 <div>
@@ -236,39 +606,54 @@
                     <span id="modal-size-prod-cat" class="text-[10px] uppercase font-bold text-brand-caramel"></span>
                 </div>
             </div>
+
             <div class="space-y-2">
-                <label class="block text-[10px] font-bold text-brand-cocoa/70 uppercase tracking-widest">Pilih Porsi &amp; Kemasan</label>
+                <label class="block text-[10px] font-bold text-brand-cocoa/70 uppercase tracking-widest">Pilih Porsi &amp; Ukuran Kemasan</label>
                 <div id="modal-size-options" class="space-y-2"></div>
             </div>
-            <button onclick="confirmAddToCartFromModal()" class="w-full bg-brand-crimson hover:bg-brand-crimsonHover text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md">
-                + Tambah Ke Keranjang
+
+            <button onclick="confirmAddToCartFromModal()" class="w-full bg-brand-crimson hover:bg-brand-crimsonHover text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md mt-2 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-cart-plus text-sm"></i> Tambahkan Ke Keranjang
             </button>
         </div>
     </div>
 
-    <!-- MODAL: ADMIN LOGIN -->
+    <!-- MODAL: ADMIN LOGIN GATEWAY -->
     <div id="admin-gate-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
         <div class="absolute inset-0 bg-brand-cocoa/60 backdrop-blur-sm" onclick="closeAdminGate()"></div>
-        <div class="bg-brand-milk rounded-3xl max-w-sm w-full p-6 shadow-2xl relative z-10 border border-brand-sand space-y-4">
+        <div class="bg-brand-milk rounded-3xl max-w-sm w-full p-6 shadow-2xl relative z-10 border border-brand-sand">
             <button onclick="closeAdminGate()" class="absolute top-4 right-4 text-brand-cocoa/50 hover:text-brand-cocoa p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-base font-serif font-bold text-brand-cocoa text-center">Login Admin</h3>
+            
+            <div class="text-center space-y-2 mb-5">
+                <div class="w-12 h-12 bg-brand-cream rounded-2xl flex items-center justify-center text-brand-crimson border border-brand-sand mx-auto text-lg">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-base font-serif font-bold text-brand-cocoa">Login Admin</h3>
+                <p class="text-xs text-brand-cocoa/60">Masuk dengan akun admin cabang atau Super Admin Anda untuk mengelola katalog.</p>
+            </div>
+
             <form onsubmit="handleAdminVerification(event)" class="space-y-3">
                 <div>
-                    <label class="block text-[10px] font-bold text-brand-cocoa/70 uppercase mb-1">Username</label>
-                    <input type="text" id="admin-username" required class="w-full px-4 py-2 bg-brand-cream/40 border border-brand-sand rounded-xl text-xs">
+                    <label class="block text-[10px] font-bold text-brand-cocoa/70 uppercase tracking-widest mb-1.5">Username</label>
+                    <input type="text" id="admin-username" required autocomplete="username" placeholder="Username admin" class="w-full px-4 py-2.5 bg-brand-cream/40 border border-brand-sand rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-crimson/20">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-bold text-brand-cocoa/70 uppercase mb-1">Password</label>
-                    <input type="password" id="admin-passcode" required class="w-full px-4 py-2 bg-brand-cream/40 border border-brand-sand rounded-xl text-xs">
+                    <label class="block text-[10px] font-bold text-brand-cocoa/70 uppercase tracking-widest mb-1.5">Password</label>
+                    <input type="password" id="admin-passcode" required autocomplete="current-password" placeholder="Password" class="w-full px-4 py-2.5 bg-brand-cream/40 border border-brand-sand rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-crimson/20">
                 </div>
-                <button type="submit" class="w-full bg-brand-crimson text-white py-2.5 rounded-xl text-xs font-bold uppercase">Masuk Dashboard</button>
+                <p id="admin-login-error" class="hidden text-[11px] text-brand-crimson font-semibold text-center bg-brand-crimson/10 rounded-lg py-1.5"></p>
+                <button type="submit" class="w-full bg-brand-crimson hover:bg-brand-crimsonHover text-white py-3 rounded-xl text-xs font-bold uppercase tracking-widest shadow-md">
+                    <i class="fa-solid fa-key mr-1.5"></i> Masuk Dashboard
+                </button>
             </form>
         </div>
     </div>
 
+    <!-- MODAL DRAWER: CART & CHECKOUT -->
     <div id="cart-drawer-modal" class="fixed inset-0 z-50 flex justify-end hidden">
         <div class="absolute inset-0 bg-brand-cocoa/60 backdrop-blur-sm" onclick="toggleCartDrawer()"></div>
         <div class="bg-brand-milk w-full max-w-md h-full relative z-10 flex flex-col shadow-2xl border-l border-brand-sand">
+            
             <div class="bg-brand-cream border-b border-brand-sand/80 px-5 py-4 flex items-center justify-between shrink-0">
                 <h3 class="text-base font-serif font-bold text-brand-cocoa flex items-center gap-2">
                     <i class="fa-solid fa-basket-shopping text-brand-crimson"></i> Keranjang Belanja
@@ -278,47 +663,25 @@
 
             <div id="cart-items-container" class="flex-grow overflow-y-auto p-4 space-y-3"></div>
 
-            <div class="border-t border-brand-sand p-4 bg-brand-cream/30 space-y-3 text-xs overflow-y-auto max-h-[50%]">
-                <span class="block font-bold uppercase tracking-wider text-brand-cocoa text-[10px]">Detail Pengiriman &amp; Pemesanan</span>
+            <div class="border-t border-brand-sand p-4 bg-brand-cream/30 space-y-3 text-xs overflow-y-auto max-h-[45%]">
+                <span class="block font-bold uppercase tracking-wider text-brand-cocoa text-[10px]"><i class="fa-solid fa-truck text-brand-caramel mr-1"></i> Informasi Pengiriman / Pengambilan</span>
                 
                 <form id="checkout-form" class="space-y-3">
-                    <div>
-                        <label class="block text-[9px] font-bold text-brand-cocoa/70 uppercase mb-1">Metode Layanan *</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="cursor-pointer border border-brand-sand bg-white p-2 rounded-xl flex items-center justify-center gap-1.5 font-bold hover:bg-brand-cream text-[11px]">
-                                <input type="radio" name="order-method" value="Ambil ke Outlet" checked onchange="toggleDeliveryFields()" class="accent-brand-crimson">
-                                <span><i class="fa-solid fa-shop text-brand-caramel mr-1"></i> Ambil ke Outlet</span>
-                            </label>
-                            <label class="cursor-pointer border border-brand-sand bg-white p-2 rounded-xl flex items-center justify-center gap-1.5 font-bold hover:bg-brand-cream text-[11px]">
-                                <input type="radio" name="order-method" value="Kirim Kurir" onchange="toggleDeliveryFields()" class="accent-brand-crimson">
-                                <span><i class="fa-solid fa-truck text-brand-caramel mr-1"></i> Kirim Kurir</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[9px] font-bold text-brand-cocoa/70 uppercase mb-1">Tipe Pemesanan *</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <label class="cursor-pointer border border-brand-sand bg-white p-2 rounded-xl flex items-center justify-center gap-1.5 font-bold hover:bg-brand-cream text-[11px]">
-                                <input type="radio" name="order-creator" value="Pesan Sendiri" checked onchange="toggleStaffField()" class="accent-brand-crimson">
-                                <span><i class="fa-solid fa-user text-brand-caramel mr-1"></i> Pesan Sendiri</span>
-                            </label>
-                            <label class="cursor-pointer border border-brand-sand bg-white p-2 rounded-xl flex items-center justify-center gap-1.5 font-bold hover:bg-brand-cream text-[11px]">
-                                <input type="radio" name="order-creator" value="Dipesankan oleh Staff" onchange="toggleStaffField()" class="accent-brand-crimson">
-                                <span><i class="fa-solid fa-user-gear text-brand-caramel mr-1"></i> Dipesankan Staff</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div id="staff-name-block" class="hidden">
-                        <label class="block text-[9px] font-bold text-brand-cocoa/70 uppercase mb-1">Nama Staff / Admin *</label>
-                        <input type="text" id="staff-name" placeholder="Nama staff yang membantu" class="w-full px-3 py-2 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson">
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="cursor-pointer border border-brand-sand bg-white p-2 rounded-xl flex items-center justify-center gap-1.5 font-bold hover:bg-brand-cream text-[11px]">
+                            <input type="radio" name="order-method" value="Ambil Sendiri (Takeaway)" checked onchange="toggleDeliveryFields()" class="accent-brand-crimson">
+                            <span>Ambil di Outlet</span>
+                        </label>
+                        <label class="cursor-pointer border border-brand-sand bg-white p-2 rounded-xl flex items-center justify-center gap-1.5 font-bold hover:bg-brand-cream text-[11px]">
+                            <input type="radio" name="order-method" value="Kirim Kurir (Gojek/Grab)" onchange="toggleDeliveryFields()" class="accent-brand-crimson">
+                            <span>Kirim Kurir</span>
+                        </label>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[9px] font-bold text-brand-cocoa/70 uppercase mb-1">Nama Pemesan *</label>
-                            <input type="text" id="buyer-name" required placeholder="Nama pembeli" class="w-full px-3 py-2 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson">
+                            <input type="text" id="buyer-name" required placeholder="Contoh: Ni Made" class="w-full px-3 py-2 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson">
                         </div>
                         <div>
                             <label class="block text-[9px] font-bold text-brand-cocoa/70 uppercase mb-1">No. WhatsApp *</label>
@@ -328,12 +691,12 @@
 
                     <div id="delivery-address-block" class="hidden space-y-2">
                         <label class="block text-[9px] font-bold text-brand-cocoa/70 uppercase">Alamat Lengkap Pengiriman *</label>
-                        <textarea id="buyer-address" rows="2" placeholder="Nama jalan, nomor rumah, dan patokan..." class="w-full px-3 py-2 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson"></textarea>
+                        <textarea id="buyer-address" rows="2" placeholder="Tulis nama jalan, nomor rumah, dan patokan..." class="w-full px-3 py-2 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson"></textarea>
                     </div>
 
                     <div>
-                        <label class="block text-[9px] font-bold text-brand-cocoa/70 uppercase mb-1">Catatan / Ucapan</label>
-                        <input type="text" id="order-notes" placeholder="Contoh: Tanpa gula, ucapan ultah..." class="w-full px-3 py-2 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson">
+                        <label class="block text-[9px] font-bold text-brand-cocoa/70 uppercase mb-1">Catatan Pesanan / Ucapan</label>
+                        <input type="text" id="order-notes" placeholder="Contoh: Minta sendok, kartu ucapan ulang tahun..." class="w-full px-3 py-2 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson">
                     </div>
                 </form>
             </div>
@@ -347,278 +710,1674 @@
                     <i class="fa-brands fa-whatsapp text-base"></i> Kirim Pesanan ke WhatsApp
                 </button>
             </div>
+
         </div>
     </div>
 
-    <!-- Toast Notifications Container -->
+    <!-- MODAL: FULL ADMIN DASHBOARD DRAWER (ADD, EDIT, DELETE PRODUCTS) -->
+    <div id="admin-dashboard-modal" class="fixed inset-0 z-50 flex justify-end hidden">
+        <div class="absolute inset-0 bg-brand-cocoa/60 backdrop-blur-sm" onclick="closeAdminDashboard()"></div>
+        <div class="bg-brand-milk w-full max-w-3xl h-full relative z-10 flex flex-col shadow-2xl border-l border-brand-sand">
+            
+            <div class="bg-brand-cream border-b border-brand-sand p-4 flex items-center justify-between shrink-0 flex-wrap gap-2">
+                <div>
+                    <h3 class="font-serif font-bold text-base text-brand-cocoa"><i class="fa-solid fa-gears text-brand-crimson mr-1"></i> Dashboard Admin Puding Panen</h3>
+                    <p class="text-[10px] text-brand-cocoa/60">Login sebagai <span id="admin-current-name" class="font-bold text-brand-cocoa"></span> &middot; <span id="admin-current-role" class="font-bold text-brand-caramel"></span></p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="reset-default-btn" onclick="restoreDefaultCatalogPrompt()" class="hidden bg-brand-cream hover:bg-brand-sand text-brand-cocoa px-3 py-1.5 rounded-lg text-[10px] font-bold border border-brand-sand" title="Reset ke Menu Default">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Reset Default
+                    </button>
+                    <button onclick="logoutAdmin()" class="bg-white hover:bg-brand-crimson hover:text-white text-brand-crimson px-3 py-1.5 rounded-lg text-[10px] font-bold border border-brand-crimson/30" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                    </button>
+                    <button onclick="closeAdminDashboard()" class="text-brand-cocoa/50 hover:text-brand-cocoa p-1.5"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 p-3 border-b border-brand-sand bg-brand-cream/40 overflow-x-auto no-scrollbar shrink-0">
+                <button id="tabbtn-stock" onclick="switchAdminTab('stock')" class="px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider bg-brand-crimson text-white shrink-0 transition-all"><i class="fa-solid fa-boxes-stacked mr-1"></i> Stok</button>
+                <button id="tabbtn-catalog" onclick="switchAdminTab('catalog')" class="superadmin-only-tab hidden px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider bg-brand-milk border border-brand-sand text-brand-cocoa shrink-0 transition-all"><i class="fa-solid fa-cookie-bite mr-1"></i> Katalog</button>
+                <button id="tabbtn-categories" onclick="switchAdminTab('categories')" class="superadmin-only-tab hidden px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider bg-brand-milk border border-brand-sand text-brand-cocoa shrink-0 transition-all"><i class="fa-solid fa-tags mr-1"></i> Kategori</button>
+                <button id="tabbtn-promo" onclick="switchAdminTab('promo')" class="superadmin-only-tab hidden px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider bg-brand-milk border border-brand-sand text-brand-cocoa shrink-0 transition-all"><i class="fa-solid fa-bullhorn mr-1"></i> Promo</button>
+                <button id="tabbtn-branches" onclick="switchAdminTab('branches')" class="superadmin-only-tab hidden px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider bg-brand-milk border border-brand-sand text-brand-cocoa shrink-0 transition-all"><i class="fa-solid fa-shop mr-1"></i> Cabang</button>
+                <button id="tabbtn-admins" onclick="switchAdminTab('admins')" class="superadmin-only-tab hidden px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider bg-brand-milk border border-brand-sand text-brand-cocoa shrink-0 transition-all"><i class="fa-solid fa-user-shield mr-1"></i> Kelola Admin</button>
+                <button id="tabbtn-password" onclick="switchAdminTab('password')" class="px-3.5 py-2 rounded-xl text-[11px] font-bold uppercase tracking-wider bg-brand-milk border border-brand-sand text-brand-cocoa shrink-0 transition-all"><i class="fa-solid fa-key mr-1"></i> Password Saya</button>
+            </div>
+
+            <div class="flex-grow overflow-y-auto p-4 sm:p-6 space-y-6">
+
+                <!-- TAB: STOK (SEMUA ADMIN, TOKO ADMIN HANYA CABANG SENDIRI) -->
+                <div id="tab-stock" class="space-y-4">
+                    <div class="bg-brand-cream/50 border border-brand-sand/70 rounded-2xl p-4 text-[11px] text-brand-cocoa/75">
+                        <span class="font-bold text-brand-caramel uppercase text-[10px] tracking-wider block mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Info</span>
+                        <span id="stock-tab-info-text">Tandai menu yang habis. Perubahan stok tidak mengubah nama, harga, foto, atau kategori menu.</span>
+                    </div>
+                    <div class="border border-brand-sand rounded-2xl overflow-hidden bg-brand-milk shadow-sm">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-brand-cream text-brand-cocoa uppercase font-bold text-[9px] tracking-wider border-b border-brand-sand">
+                                    <tr id="stock-table-head"></tr>
+                                </thead>
+                                <tbody id="stock-table-body" class="divide-y divide-brand-sand/50"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: KATALOG PRODUK (SUPERADMIN ONLY) -->
+                <div id="tab-catalog" class="hidden space-y-6 superadmin-only-tab">
+                    <!-- FORM TAMBAH / EDIT PRODUK -->
+                    <div class="bg-brand-cream/40 p-5 rounded-2xl border border-brand-sand space-y-4 shadow-sm">
+                        <div class="flex items-center justify-between border-b border-brand-sand pb-2">
+                            <h4 id="admin-form-title" class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider">
+                                <i class="fa-solid fa-plus-circle text-brand-crimson mr-1"></i> Tambah Produk Baru
+                            </h4>
+                            <span id="editing-indicator" class="hidden text-[10px] font-extrabold bg-brand-gold/20 text-brand-cocoa px-2 py-0.5 rounded border border-brand-gold/40">Mode Edit</span>
+                        </div>
+
+                        <form id="admin-product-form" onsubmit="handleAdminProductSave(event)" class="space-y-3 text-xs">
+                            <input type="hidden" id="admin-prod-id">
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Nama Produk *</label>
+                                    <input type="text" id="admin-prod-name" required placeholder="Contoh: Puding Durian Monthong" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson">
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Kategori *</label>
+                                    <select id="admin-prod-category" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson"></select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Harga Dasar (Rp) *</label>
+                                    <input type="number" id="admin-prod-price" required min="500" step="500" placeholder="15000" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson">
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Deskripsi Singkat</label>
+                                    <input type="text" id="admin-prod-desc" placeholder="Jelaskan rasa, tekstur, atau keunikan..." class="w-full p-2.5 bg-white border border-brand-sand rounded-xl focus:outline-none focus:border-brand-crimson">
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-white border border-brand-sand rounded-xl space-y-2">
+                                <span class="block font-bold text-[10px] uppercase text-brand-caramel">Sumber Foto Produk</span>
+                                <div class="flex gap-2">
+                                    <button type="button" id="img-mode-btn-upload" onclick="setImageSourceMode('upload')" class="flex-1 px-2 py-2 rounded-lg border border-brand-sand text-[11px] font-bold transition-all">
+                                        <i class="fa-solid fa-upload mr-1"></i> Upload dari Komputer
+                                    </button>
+                                    <button type="button" id="img-mode-btn-drive" onclick="setImageSourceMode('drive')" class="flex-1 px-2 py-2 rounded-lg border border-brand-sand text-[11px] font-bold transition-all">
+                                        <i class="fa-brands fa-google-drive mr-1"></i> Link Google Drive / URL
+                                    </button>
+                                </div>
+                                <input type="file" id="admin-prod-image-file" accept="image/*" onchange="handleImageFileUpload(event)" class="w-full p-2 bg-white border border-brand-sand rounded-xl text-[11px]">
+                                <input type="text" id="admin-prod-image" placeholder="Tempel link Google Drive (share: Anyone with the link) atau URL gambar lain" oninput="showImagePreview(normalizeImageUrl(this.value))" class="hidden w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                <div id="admin-prod-image-preview-wrap" class="hidden">
+                                    <img id="admin-prod-image-preview" class="w-16 h-16 object-cover rounded-lg border border-brand-sand">
+                                </div>
+                                <p class="text-[9px] text-brand-cocoa/50">Untuk Google Drive: set sharing ke "Anyone with the link can view", tautan otomatis dikonversi jadi link gambar langsung. Untuk upload komputer, maksimal 2MB per foto.</p>
+                            </div>
+
+                            <div class="p-3 bg-white border border-brand-sand rounded-xl space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="block font-bold text-[10px] uppercase text-brand-caramel">Pengaturan Varian Ukuran &amp; Harga</span>
+                                    <button type="button" onclick="addSizeRow()" class="text-[10px] font-bold text-brand-crimson hover:underline"><i class="fa-solid fa-plus mr-1"></i>Tambah Ukuran</button>
+                                </div>
+                                <div id="admin-size-rows" class="space-y-2"></div>
+                                <p class="text-[9px] text-brand-cocoa/50">Kosongkan semua bila produk hanya punya 1 harga standar (harga dasar akan dipakai otomatis).</p>
+                            </div>
+
+                            <div class="flex justify-end gap-2 pt-2">
+                                <button type="button" onclick="resetAdminProductForm()" class="px-4 py-2 bg-brand-milk border border-brand-sand rounded-xl font-bold hover:bg-brand-cream">Reset Form</button>
+                                <button type="submit" class="px-6 py-2 bg-brand-crimson hover:bg-brand-crimsonHover text-white rounded-xl font-bold shadow-sm">
+                                    <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Produk
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- TABLE DAFTAR INVENTARIS PRODUK -->
+                    <div class="space-y-3">
+                        <h4 id="admin-inventory-title" class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider">Daftar Menu Produk</h4>
+                        <div class="border border-brand-sand rounded-2xl overflow-hidden bg-brand-milk shadow-sm">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="bg-brand-cream text-brand-cocoa uppercase font-bold text-[9px] tracking-wider border-b border-brand-sand">
+                                        <tr>
+                                            <th class="p-3">Gambar</th>
+                                            <th class="p-3">Nama Produk</th>
+                                            <th class="p-3">Kategori</th>
+                                            <th class="p-3">Harga Dasar</th>
+                                            <th class="p-3 text-right">Aksi Kelola</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-products-table-body" class="divide-y divide-brand-sand/50">
+                                        <!-- Rows populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: KATEGORI (SUPERADMIN ONLY) -->
+                <div id="tab-categories" class="hidden space-y-4 superadmin-only-tab">
+                    <div class="bg-brand-cream/40 p-5 rounded-2xl border border-brand-sand space-y-3">
+                        <h4 class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider border-b border-brand-sand pb-2">Tambah Kategori Baru</h4>
+                        <form onsubmit="handleCategoryAdd(event)" class="flex gap-2">
+                            <input type="text" id="new-category-name" required placeholder="Nama kategori baru" class="flex-grow p-2.5 bg-white border border-brand-sand rounded-xl text-xs">
+                            <button type="submit" class="px-4 py-2 bg-brand-crimson hover:bg-brand-crimsonHover text-white rounded-xl font-bold text-xs shrink-0"><i class="fa-solid fa-plus mr-1"></i>Tambah</button>
+                        </form>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider">Daftar Kategori</h4>
+                        <div id="category-management-list" class="space-y-2 text-xs"></div>
+                    </div>
+                </div>
+
+                <!-- TAB: PROMO (SUPERADMIN ONLY) -->
+                <div id="tab-promo" class="hidden space-y-4 superadmin-only-tab">
+                    <div class="bg-brand-cream/40 p-5 rounded-2xl border border-brand-sand space-y-3 max-w-xl">
+                        <h4 class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider border-b border-brand-sand pb-2">Kelola Banner Promo</h4>
+                        <form id="promo-form" onsubmit="handlePromoSave(event)" class="space-y-3 text-xs">
+                            <label class="flex items-center gap-2 font-bold text-brand-cocoa/80">
+                                <input type="checkbox" id="promo-enabled-input" class="accent-brand-crimson"> Tampilkan banner promo di website
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Label Badge</label>
+                                    <input type="text" id="promo-badge-input" placeholder="Promo Spesial" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Berlaku Sampai</label>
+                                    <input type="text" id="promo-expiry-input" placeholder="Berlaku s/d 31 Agu 2026" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-brand-cocoa/80">Judul Promo (tebal, kuning)</label>
+                                <input type="text" id="promo-headline-input" placeholder="BUY 8, GET 1 FREE!" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-brand-cocoa/80">Keterangan Promo</label>
+                                <textarea id="promo-detail-input" rows="2" placeholder="S&amp;K berlaku untuk..." class="w-full p-2.5 bg-white border border-brand-sand rounded-xl"></textarea>
+                            </div>
+                            <button type="submit" class="px-6 py-2 bg-brand-crimson hover:bg-brand-crimsonHover text-white rounded-xl font-bold shadow-sm"><i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Promo</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TAB: CABANG (SUPERADMIN ONLY) -->
+                <div id="tab-branches" class="hidden space-y-4 superadmin-only-tab">
+                    <div class="bg-brand-cream/40 p-5 rounded-2xl border border-brand-sand space-y-3">
+                        <h4 id="branch-form-title" class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider border-b border-brand-sand pb-2">Tambah Cabang Baru</h4>
+                        <form id="admin-branch-form" onsubmit="handleBranchSave(event)" class="space-y-3 text-xs">
+                            <input type="hidden" id="admin-branch-id">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Nama Cabang *</label>
+                                    <input type="text" id="admin-branch-name" required placeholder="Contoh: Sunset Road" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">No. WhatsApp Cabang *</label>
+                                    <input type="text" id="admin-branch-phone" required placeholder="081999340111" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-brand-cocoa/80">Alamat Lengkap *</label>
+                                <input type="text" id="admin-branch-address" required placeholder="Jl. ..." class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Jam Operasional</label>
+                                    <input type="text" id="admin-branch-hours" placeholder="08.00 - 21.00 WITA" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Link Google Maps</label>
+                                    <input type="text" id="admin-branch-maps" placeholder="https://maps.google.com/?q=..." class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                </div>
+                            </div>
+                            <div class="flex justify-end gap-2 pt-1">
+                                <button type="button" onclick="resetBranchForm()" class="px-4 py-2 bg-brand-milk border border-brand-sand rounded-xl font-bold hover:bg-brand-cream">Reset</button>
+                                <button type="submit" class="px-6 py-2 bg-brand-crimson hover:bg-brand-crimsonHover text-white rounded-xl font-bold shadow-sm"><i class="fa-solid fa-floppy-disk mr-1"></i> Simpan Cabang</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider">Daftar Cabang</h4>
+                        <div id="branch-management-list" class="space-y-2 text-xs"></div>
+                    </div>
+                </div>
+
+                <!-- TAB: KELOLA ADMIN (SUPERADMIN ONLY) -->
+                <div id="tab-admins" class="hidden space-y-4 superadmin-only-tab">
+                    <div class="bg-brand-cream/40 p-5 rounded-2xl border border-brand-sand space-y-3">
+                        <h4 class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider border-b border-brand-sand pb-2">Tambah Admin Baru</h4>
+                        <form id="admin-account-form" onsubmit="handleAdminAccountSave(event)" class="space-y-3 text-xs">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Nama Admin *</label>
+                                    <input type="text" id="admin-new-name" required class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Username *</label>
+                                    <input type="text" id="admin-new-username" required class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Password Awal * (min. 6 karakter)</label>
+                                    <input type="password" id="admin-new-password" required minlength="6" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1 text-brand-cocoa/80">Peran *</label>
+                                    <select id="admin-new-role" onchange="toggleAdminRoleFields()" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                                        <option value="branch">Admin Cabang</option>
+                                        <option value="superadmin">Super Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="admin-new-branch-wrap">
+                                <label class="block font-bold mb-1 text-brand-cocoa/80">Cabang</label>
+                                <select id="admin-new-branch" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl"></select>
+                            </div>
+                            <div class="flex justify-end pt-1">
+                                <button type="submit" class="px-6 py-2 bg-brand-crimson hover:bg-brand-crimsonHover text-white rounded-xl font-bold shadow-sm"><i class="fa-solid fa-user-plus mr-1"></i> Tambah Admin</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider">Daftar Admin</h4>
+                        <div id="admin-management-list" class="space-y-2 text-xs"></div>
+                    </div>
+                </div>
+
+                <!-- TAB: PASSWORD SAYA -->
+                <div id="tab-password" class="hidden space-y-4">
+                    <div class="bg-brand-cream/40 p-5 rounded-2xl border border-brand-sand space-y-3 max-w-md">
+                        <h4 class="font-serif font-bold text-sm text-brand-cocoa uppercase tracking-wider border-b border-brand-sand pb-2">Ganti Password Saya</h4>
+                        <form id="change-password-form" onsubmit="handleChangePassword(event)" class="space-y-3 text-xs">
+                            <div>
+                                <label class="block font-bold mb-1 text-brand-cocoa/80">Password Saat Ini *</label>
+                                <input type="password" id="pw-current" required class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-brand-cocoa/80">Password Baru * (min. 6 karakter)</label>
+                                <input type="password" id="pw-new" required minlength="6" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1 text-brand-cocoa/80">Konfirmasi Password Baru *</label>
+                                <input type="password" id="pw-confirm" required minlength="6" class="w-full p-2.5 bg-white border border-brand-sand rounded-xl">
+                            </div>
+                            <button type="submit" class="px-6 py-2 bg-brand-crimson hover:bg-brand-crimsonHover text-white rounded-xl font-bold shadow-sm"><i class="fa-solid fa-key mr-1"></i> Simpan Password Baru</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMATION DIALOG FOR DELETION -->
+    <div id="delete-confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-brand-cocoa/60 backdrop-blur-sm" onclick="closeDeleteConfirmModal()"></div>
+        <div class="bg-brand-milk rounded-3xl max-w-sm w-full p-6 shadow-2xl relative z-10 border border-brand-sand text-center space-y-4">
+            <div class="w-12 h-12 bg-red-100 text-brand-crimson rounded-2xl flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="space-y-1">
+                <h4 class="font-serif font-bold text-base text-brand-cocoa">Hapus Produk Ini?</h4>
+                <p id="delete-target-name" class="text-xs text-brand-cocoa/70 italic"></p>
+                <p class="text-[11px] text-red-600">Tindakan ini tidak dapat dibatalkan.</p>
+            </div>
+            <div class="flex items-center gap-2 pt-2">
+                <button onclick="closeDeleteConfirmModal()" class="w-1/2 py-2.5 bg-brand-cream border border-brand-sand rounded-xl text-xs font-bold text-brand-cocoa">Batal</button>
+                <button id="confirm-delete-btn" onclick="executeDeleteProduct()" class="w-1/2 py-2.5 bg-brand-crimson hover:bg-brand-crimsonHover text-white rounded-xl text-xs font-bold">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS -->
     <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-xs w-full"></div>
 
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT APPLICATION CORE LOGIC          -->
+    <!-- ========================================== -->
     <script>
+        // Store Locations Initial Data
+        let STORES = [];
         const DEFAULT_STORES = [
-            { id: "gatsu", name: "Puding Panen Bali Gatsu Tengah", shortName: "Gatsu Tengah", address: "Jl. Gatot Subroto Tengah No.99", hours: "08.00 - 21.00 WITA", phone: "081999340111" },
-            { id: "teuku", name: "Puding Panen Bali Teuku Umar Barat", shortName: "Teuku Umar Barat", address: "Jl. Teuku Umar Barat No.88", hours: "09.00 - 22.00 WITA", phone: "081999340111" },
-            { id: "renon", name: "Puding Panen Bali Tukad Yeh Aya", shortName: "Renon", address: "Jl. Tukad Yeh Aya No.77", hours: "08.00 - 20.00 WITA", phone: "081999340111" }
+            {
+                id: "gatsu",
+                name: "Puding Panen Bali Gatsu Tengah",
+                shortName: "Gatsu Tengah",
+                address: "Jl. Gatot Subroto Tengah No.99, Denpasar, Bali",
+                hours: "08.00 - 21.00 WITA",
+                phone: "081999340111",
+                mapsUrl: "https://maps.google.com/?q=Gatot+Subroto+Tengah+Denpasar"
+            },
+            {
+                id: "teuku",
+                name: "Puding Panen Bali Teuku Umar Barat",
+                shortName: "Teuku Umar Barat",
+                address: "Jl. Teuku Umar Barat No.88, Denpasar, Bali",
+                hours: "09.00 - 22.00 WITA",
+                phone: "081999340111",
+                mapsUrl: "https://maps.google.com/?q=Teuku+Umar+Barat+Denpasar"
+            },
+            {
+                id: "renon",
+                name: "Puding Panen Bali Tukad Yeh Aya — Renon",
+                shortName: "Tukad Yeh Aya - Renon",
+                address: "Jl. Tukad Yeh Aya No.77, Renon, Denpasar, Bali",
+                hours: "08.00 - 20.00 WITA",
+                phone: "081999340111",
+                mapsUrl: "https://maps.google.com/?q=Tukad+Yeh+Aya+Renon+Denpasar"
+            }
         ];
 
+        // Authentic Catalog Default Items from Puding Panen Bali Menu (sesuai katalog IG @pudingpanenbali)
         const DEFAULT_PRODUCTS = [
-            { id: "p1", name: "Puding Box Kelapa Muda", category: "Puding Box", price: 70000, image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop", desc: "Puding box kelapa muda khas Bali.", sizes: { "Box Standard": 70000 } },
-            { id: "p2", name: "Puding Cup Kelapa Muda", category: "Puding Cup", price: 6500, image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop", desc: "Puding cup kelapa muda segar.", sizes: { "Cup Kecil": 6500, "Cup Besar": 12000 } },
-            { id: "p3", name: "Lemongrass Jelly", category: "Minuman Botol", price: 15000, image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=800&auto=format&fit=crop", desc: "Minuman serai murni jelly dingin.", sizes: { "Botol 350ml": 15000 } }
+            // --- PUDING BOX (isi loyang, 8 varian) ---
+            { id: "p1", name: "Puding Box Kelapa Muda", category: "Puding Box", price: 70000, image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop", desc: "Puding box kelapa muda lembut khas Bali. Fla terpisah, tanya ketersediaan stok.", sizes: { "Puding Box": 70000 } },
+            { id: "p2", name: "Puding Box Cappuccino", category: "Puding Box", price: 70000, image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop", desc: "Puding box rasa cappuccino gurih beraroma kopi. Fla terpisah.", sizes: { "Puding Box": 70000 } },
+            { id: "p3", name: "Puding Box Tape Hijau", category: "Puding Box", price: 70000, image: "https://images.unsplash.com/photo-1579372786545-d24232daf58c?q=80&w=800&auto=format&fit=crop", desc: "Puding box rasa tape ketan hijau manis legit. Fla terpisah.", sizes: { "Puding Box": 70000 } },
+            { id: "p4", name: "Puding Box Tape Hitam", category: "Puding Box", price: 70000, image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=800&auto=format&fit=crop", desc: "Puding box rasa tape ketan hitam khas nusantara. Fla terpisah.", sizes: { "Puding Box": 70000 } },
+            { id: "p5", name: "Puding Box Cokelat", category: "Puding Box", price: 70000, image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=800&auto=format&fit=crop", desc: "Puding box cokelat pekat klasik favorit semua usia. Fla terpisah.", sizes: { "Puding Box": 70000 } },
+            { id: "p6", name: "Puding Box Cokelat Susu", category: "Puding Box", price: 70000, image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=800&auto=format&fit=crop", desc: "Puding box cokelat susu creamy dan manis lembut. Fla terpisah.", sizes: { "Puding Box": 70000 } },
+            { id: "p7", name: "Puding Box Mango", category: "Puding Box", price: 70000, image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=800&auto=format&fit=crop", desc: "Puding box rasa mangga segar alami. Fla terpisah.", sizes: { "Puding Box": 70000 } },
+            { id: "p8", name: "Puding Box Leci", category: "Puding Box", price: 80000, image: "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?q=80&w=800&auto=format&fit=crop", desc: "Puding box rasa leci segar menyegarkan. Fla terpisah.", sizes: { "Puding Box": 80000 } },
+
+            // --- MINUMAN BOTOL ---
+            { id: "p9", name: "Lemongrass Jelly (Botol)", category: "Minuman Botol", price: 15000, image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=800&auto=format&fit=crop", desc: "Es minuman serai murni dengan jelly kenyal segar. Daya simpan maks. 4 jam suhu ruang.", sizes: { "Botol 350ml": 15000 } },
+            { id: "p10", name: "Coconut Water Jelly (Botol)", category: "Minuman Botol", price: 15000, image: "https://images.unsplash.com/photo-1546173159-315724a31696?q=80&w=800&auto=format&fit=crop", desc: "Air kelapa murni dingin dengan potongan jelly alami. Daya simpan maks. 4 jam suhu ruang.", sizes: { "Botol 350ml": 15000 } },
+            { id: "p13", name: "Cappuccino Jelly (Botol)", category: "Minuman Botol", price: 15000, image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop", desc: "Minuman jelly rasa cappuccino segar dalam kemasan botol.", sizes: { "Botol 350ml": 15000 } },
+
+            // --- CAKES & TREATS ---
+            { id: "p11", name: "Signature Fudgy Brownies", category: "Cakes & Treats", price: 45000, image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=800&auto=format&fit=crop", desc: "Brownies cokelat panggang homemade dengan tekstur fudgy dan kerak shiny crust.", sizes: { "Standard Box": 45000 } },
+            { id: "p12", name: "Pudding Cake Ulang Tahun", category: "Cakes & Treats", price: 150000, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=800&auto=format&fit=crop", desc: "Kue puding cantik berdiameter besar untuk pesta ulang tahun / perayaan (Pre-order).", sizes: { "Loyang Besar 22cm": 150000 } },
+
+            // --- PUDING CUP (Kecil 6.5K / Besar 12K, 8 varian) ---
+            { id: "p14", name: "Puding Cup Kelapa Muda", category: "Puding Cup", price: 6500, image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop", desc: "Puding cup rasa kelapa muda, tersedia ukuran kecil & besar.", sizes: { "Cup Kecil": 6500, "Cup Besar": 12000 } },
+            { id: "p15", name: "Puding Cup Tape Hijau", category: "Puding Cup", price: 6500, image: "https://images.unsplash.com/photo-1579372786545-d24232daf58c?q=80&w=800&auto=format&fit=crop", desc: "Puding cup rasa tape hijau, tersedia ukuran kecil & besar.", sizes: { "Cup Kecil": 6500, "Cup Besar": 12000 } },
+            { id: "p16", name: "Puding Cup Ketan Hitam", category: "Puding Cup", price: 6500, image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=800&auto=format&fit=crop", desc: "Puding cup rasa ketan hitam, tersedia ukuran kecil & besar.", sizes: { "Cup Kecil": 6500, "Cup Besar": 12000 } },
+            { id: "p17", name: "Puding Cup Cokelat", category: "Puding Cup", price: 6500, image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=800&auto=format&fit=crop", desc: "Puding cup rasa cokelat klasik, tersedia ukuran kecil & besar.", sizes: { "Cup Kecil": 6500, "Cup Besar": 12000 } },
+            { id: "p18", name: "Puding Cup Cokelat Susu", category: "Puding Cup", price: 6500, image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=800&auto=format&fit=crop", desc: "Puding cup rasa cokelat susu, tersedia ukuran kecil & besar.", sizes: { "Cup Kecil": 6500, "Cup Besar": 12000 } },
+            { id: "p19", name: "Puding Cup Cappuccino", category: "Puding Cup", price: 6500, image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop", desc: "Puding cup rasa cappuccino, tersedia ukuran kecil & besar.", sizes: { "Cup Kecil": 6500, "Cup Besar": 12000 } },
+            { id: "p20", name: "Puding Cup Leci", category: "Puding Cup", price: 6500, image: "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?q=80&w=800&auto=format&fit=crop", desc: "Puding cup rasa leci segar, tersedia ukuran kecil & besar.", sizes: { "Cup Kecil": 6500, "Cup Besar": 12000 } },
+            { id: "p21", name: "Puding Cup Mango", category: "Puding Cup", price: 6500, image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=800&auto=format&fit=crop", desc: "Puding cup rasa mango segar, tersedia ukuran kecil & besar.", sizes: { "Cup Kecil": 6500, "Cup Besar": 12000 } },
+
+            // --- PUDING SILKY CUP (6.5K, 4 varian) ---
+            { id: "p22", name: "Puding Silky Cokelat", category: "Puding Silky", price: 6500, image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=800&auto=format&fit=crop", desc: "Puding silky bertekstur super lembut rasa cokelat.", sizes: { "Cup Silky": 6500 } },
+            { id: "p23", name: "Puding Silky Avocado", category: "Puding Silky", price: 6500, image: "https://images.unsplash.com/photo-1587049633312-d628ae50a8ae?q=80&w=800&auto=format&fit=crop", desc: "Puding silky bertekstur super lembut rasa alpukat.", sizes: { "Cup Silky": 6500 } },
+            { id: "p24", name: "Puding Silky Strawberry", category: "Puding Silky", price: 6500, image: "https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=800&auto=format&fit=crop", desc: "Puding silky bertekstur super lembut rasa stroberi.", sizes: { "Cup Silky": 6500 } },
+            { id: "p25", name: "Puding Silky Taro", category: "Puding Silky", price: 6500, image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop", desc: "Puding silky bertekstur super lembut rasa talas ungu.", sizes: { "Cup Silky": 6500 } },
+
+            // --- PUDING BULAT H-1 (pre-order) ---
+            { id: "p26", name: "Puding Bulat Minimalis", category: "Puding Bulat", price: 140000, image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=800&auto=format&fit=crop", desc: "Diameter ±18cm, hanya bisa 1 rasa (sama seperti varian Puding Box). Pre-order H-1.", sizes: { "Diameter 18cm": 140000 } },
+            { id: "p27", name: "Puding Bulat Buah", category: "Puding Bulat", price: 200000, image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=800&auto=format&fit=crop", desc: "Diameter ±20cm, bisa pilih 2 rasa, dihias buah segar (hiasan tergantung stok). Pre-order H-1.", sizes: { "Diameter 20cm": 200000 } },
+            { id: "p28", name: "Puding Bulat Marie Regal", category: "Puding Bulat", price: 230000, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=800&auto=format&fit=crop", desc: "Diameter ±22cm dengan lapisan Marie Regal. Pre-order H-1.", sizes: { "Diameter 22cm": 230000 } },
+            { id: "p29", name: "Puding Bulat 3 Rasa", category: "Puding Bulat", price: 250000, image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop", desc: "Diameter ±22cm, bisa pilih 3 rasa (tambahan rasa Leci +Rp10.000). Pre-order H-1.", sizes: { "Diameter 22cm": 250000 } },
+
+            // --- SIGNATURE DRINKS (khusus cabang Renon) ---
+            { id: "p30", name: "Matcha Signature", category: "Signature Drinks", price: 25000, image: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?q=80&w=800&auto=format&fit=crop", desc: "Es matcha creamy, bebas pilih topping 1 puding cup. *Hanya tersedia di cabang Renon.", sizes: { "Regular": 25000 } },
+            { id: "p31", name: "Lemongrass Signature", category: "Signature Drinks", price: 20000, image: "https://images.unsplash.com/photo-1499638673689-79a0b5115d87?q=80&w=800&auto=format&fit=crop", desc: "Sudah termasuk jelly rainbow & chiaseed, pilih buah leci/lengkeng. *Hanya tersedia di cabang Renon.", sizes: { "Regular": 20000 } },
+            { id: "p32", name: "Chocolate Signature", category: "Signature Drinks", price: 25000, image: "https://images.unsplash.com/photo-1517578239113-b03992dcdd25?q=80&w=800&auto=format&fit=crop", desc: "Es cokelat creamy, bebas pilih topping 1 puding cup. *Hanya tersedia di cabang Renon.", sizes: { "Regular": 25000 } },
+
+            // --- ADDITIONALS ---
+            { id: "p33", name: "Kartu Ucapan", category: "Additionals", price: 3000, image: "https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=800&auto=format&fit=crop", desc: "Tambahan kartu ucapan untuk pesanan hadiah / hampers.", sizes: { "Per Kartu": 3000 } },
+            { id: "p34", name: "Fla 250ml", category: "Additionals", price: 10000, image: "https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=800&auto=format&fit=crop", desc: "Fla tambahan 250ml, dijual terpisah dari puding box/cup.", sizes: { "250ml": 10000 } },
+            { id: "p35", name: "Tas Kain", category: "Additionals", price: 5000, image: "https://images.unsplash.com/photo-1591561954557-26941169b49e?q=80&w=800&auto=format&fit=crop", desc: "Tas kain untuk membawa pesanan, tersedia ukuran standar & besar.", sizes: { "Standar": 5000, "Besar": 7000 } },
+
+            // --- HAMPERS ---
+            { id: "p36", name: "Hampers Box of 6 Signature Mix", category: "Hampers", price: 95000, image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=800&auto=format&fit=crop", desc: "Boks hantaran berisi 6 varian Small Cup pilihan lengkap dengan pita & kartu ucapan. Katalog hampers lengkap terpisah, cek Instagram @pudingpanenbali.", sizes: { "Gift Box Isi 6": 95000 } }
         ];
 
-        const DEFAULT_CATEGORIES = ["Puding Box", "Puding Cup", "Minuman Botol", "Cakes & Treats"];
-        let STORES = [], products = [], CATEGORIES = [], shoppingCart = [], selectedStore = null, currentFilterCategory = "All", modalActiveProductId = null;
+        // Default Categories
+        const DEFAULT_CATEGORIES = ["Puding Box", "Puding Cup", "Puding Silky", "Minuman Botol", "Puding Bulat", "Signature Drinks", "Cakes & Treats", "Additionals", "Hampers"];
+
+        // Default Admin Accounts (username / password bisa diubah lewat tab "Password Saya" & "Kelola Admin")
+        const DEFAULT_ADMINS = [
+            { id: "admin_gatsu", username: "admin.gatsu", password: "Gatsu#2026", name: "Admin Gatsu Tengah", role: "branch", branchId: "gatsu" },
+            { id: "admin_renon", username: "admin.renon", password: "Renon#2026", name: "Admin Renon", role: "branch", branchId: "renon" },
+            { id: "admin_teuku", username: "admin.teuku", password: "TeukuUmar#2026", name: "Admin Teuku Umar", role: "branch", branchId: "teuku" },
+            { id: "admin_super", username: "superadmin", password: "SuperAdmin#2026", name: "Super Admin", role: "superadmin", branchId: null }
+        ];
+
+        // Default promo banner settings
+        const DEFAULT_PROMO = {
+            enabled: true,
+            badge: "Promo Spesial",
+            headline: "BUY 8, GET 1 FREE!",
+            detail: "S&K berlaku untuk varian Small Cup & Big Cup di seluruh cabang Bali.",
+            expiry: "Berlaku s/d 31 Agu 2026"
+        };
+
+        // Global State Variables
+        let products = [];
+        let CATEGORIES = [];
+        let ADMINS = [];
+        let currentAdmin = null;
+        let imageSourceMode = 'upload';
+        let productStock = {};
+        let promoSettings = {};
+        let shoppingCart = [];
+        let selectedStore = null;
+        let currentFilterCategory = "All";
+        let modalActiveProductId = null;
+        let deleteTargetId = null;
 
         window.onload = function() {
-            STORES = DEFAULT_STORES;
-            CATEGORIES = DEFAULT_CATEGORIES;
-            products = DEFAULT_PRODUCTS;
+            loadStoresFromStorage();
+            loadCategoriesFromStorage();
+            loadAdminsFromStorage();
+            loadProductsFromStorage();
+            loadStockFromStorage();
+            loadPromoFromStorage();
             selectedStore = STORES[0];
-
             document.getElementById('header-branch-name').innerText = selectedStore.shortName;
             document.getElementById('mobile-branch-name').innerText = selectedStore.shortName;
-
+            renderStoreOptions();
             renderStoresSection();
             renderCategoryTabs();
             renderProducts();
-            renderStoreModalOptions();
+            renderPromoBanner();
             updateCartUI();
         };
 
-        function formatRupiah(num) {
-            return "Rp " + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        // Storage Operations
+        function loadProductsFromStorage() {
+            const saved = localStorage.getItem('ppb_products');
+            if (saved) {
+                try {
+                    products = JSON.parse(saved);
+                } catch(e) {
+                    products = [...DEFAULT_PRODUCTS];
+                }
+            } else {
+                products = [...DEFAULT_PRODUCTS];
+            }
         }
 
-        function showToast(msg, type = "success") {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `p-3 rounded-xl text-xs font-bold text-white shadow-lg transition-all pointer-events-auto ${type === 'error' ? 'bg-red-600' : 'bg-brand-cocoa'}`;
-            toast.innerText = msg;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function saveProductsToStorage() {
+            localStorage.setItem('ppb_products', JSON.stringify(products));
         }
 
+        function loadCategoriesFromStorage() {
+            const saved = localStorage.getItem('ppb_categories');
+            if (saved) {
+                try { CATEGORIES = JSON.parse(saved); } catch(e) { CATEGORIES = [...DEFAULT_CATEGORIES]; }
+            } else {
+                CATEGORIES = [...DEFAULT_CATEGORIES];
+            }
+        }
+
+        function saveCategoriesToStorage() {
+            localStorage.setItem('ppb_categories', JSON.stringify(CATEGORIES));
+        }
+
+        function loadStoresFromStorage() {
+            const saved = localStorage.getItem('ppb_stores');
+            if (saved) {
+                try { STORES = JSON.parse(saved); } catch(e) { STORES = [...DEFAULT_STORES]; }
+            } else {
+                STORES = [...DEFAULT_STORES];
+            }
+            if (!STORES || STORES.length === 0) STORES = [...DEFAULT_STORES];
+        }
+
+        function saveStoresToStorage() {
+            localStorage.setItem('ppb_stores', JSON.stringify(STORES));
+        }
+
+        function loadAdminsFromStorage() {
+            const saved = localStorage.getItem('ppb_admins');
+            if (saved) {
+                try { ADMINS = JSON.parse(saved); } catch(e) { ADMINS = [...DEFAULT_ADMINS]; }
+            } else {
+                ADMINS = [...DEFAULT_ADMINS];
+            }
+        }
+
+        function saveAdminsToStorage() {
+            localStorage.setItem('ppb_admins', JSON.stringify(ADMINS));
+        }
+
+        function loadStockFromStorage() {
+            const saved = localStorage.getItem('ppb_stock');
+            if (saved) {
+                try { productStock = JSON.parse(saved); } catch(e) { productStock = {}; }
+            } else {
+                productStock = {};
+            }
+        }
+
+        function saveStockToStorage() {
+            localStorage.setItem('ppb_stock', JSON.stringify(productStock));
+        }
+
+        function loadPromoFromStorage() {
+            const saved = localStorage.getItem('ppb_promo');
+            if (saved) {
+                try { promoSettings = JSON.parse(saved); } catch(e) { promoSettings = { ...DEFAULT_PROMO }; }
+            } else {
+                promoSettings = { ...DEFAULT_PROMO };
+            }
+        }
+
+        function savePromoToStorage() {
+            localStorage.setItem('ppb_promo', JSON.stringify(promoSettings));
+        }
+
+        // Stock helpers - default = tersedia (true) unless explicitly marked habis (false)
+        function isProductInStock(productId, branchId) {
+            return !(productStock[branchId] && productStock[branchId][productId] === false);
+        }
+
+        function toggleStock(productId, branchId) {
+            if (!currentAdmin) return;
+            if (currentAdmin.role !== 'superadmin' && currentAdmin.branchId !== branchId) {
+                showToast('Anda hanya bisa mengubah stok cabang sendiri.', 'warning');
+                return;
+            }
+            if (!productStock[branchId]) productStock[branchId] = {};
+            productStock[branchId][productId] = !isProductInStock(productId, branchId);
+            saveStockToStorage();
+            renderStockTab();
+            renderProducts();
+            showToast('Status stok diperbarui.');
+        }
+
+        // Promo Banner Toggle
+        function dismissPromoBanner() {
+            const banner = document.getElementById('promo-banner');
+            if (banner) banner.style.display = 'none';
+        }
+
+        // Mobile Menu Drawer
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                icon.className = 'fa-solid fa-bars text-lg';
+            } else {
+                icon.className = 'fa-solid fa-xmark text-lg';
+            }
+        }
+
+        function resetToHome() {
+            setFilterCategory("All");
+        }
+
+        // Store Locations Modal & Functions
+        function renderStoreOptions() {
+            const container = document.getElementById('store-options-container');
+            container.innerHTML = STORES.map(store => `
+                <button onclick="selectStore('${store.id}')" class="w-full text-left p-4 rounded-2xl border ${selectedStore.id === store.id ? 'border-brand-crimson bg-brand-cream/60' : 'border-brand-sand bg-brand-milk hover:bg-brand-cream/30'} transition-all flex items-center justify-between">
+                    <div>
+                        <span class="font-serif font-bold text-sm text-brand-cocoa block">${store.shortName}</span>
+                        <span class="text-[11px] text-brand-cocoa/60 block mt-0.5"><i class="fa-solid fa-location-dot text-brand-caramel mr-1"></i> ${store.address}</span>
+                    </div>
+                    <i class="fa-solid fa-circle-check text-sm ${selectedStore.id === store.id ? 'text-brand-crimson' : 'text-transparent'}"></i>
+                </button>
+            `).join('');
+        }
+
+        function selectStore(storeId) {
+            const store = STORES.find(s => s.id === storeId);
+            if (store) {
+                selectedStore = store;
+                document.getElementById('header-branch-name').innerText = store.shortName;
+                document.getElementById('mobile-branch-name').innerText = store.shortName;
+                document.getElementById('store-selector-modal').classList.add('hidden');
+                renderProducts();
+                showToast(`Cabang aktif diubah ke: ${store.shortName}`);
+            }
+        }
+
+        function triggerStoreSelectionModal() {
+            renderStoreOptions();
+            document.getElementById('store-selector-modal').classList.remove('hidden');
+        }
+
+        function renderStoresSection() {
+            const container = document.getElementById('stores-grid-container');
+            container.innerHTML = STORES.map(store => `
+                <div class="bg-brand-milk p-6 rounded-3xl border border-brand-sand shadow-warm space-y-4 hover:border-brand-caramel transition-all">
+                    <div class="w-10 h-10 bg-brand-cream text-brand-crimson rounded-xl flex items-center justify-center font-bold border border-brand-sand"><i class="fa-solid fa-shop"></i></div>
+                    <div class="space-y-1">
+                        <h3 class="font-serif font-bold text-lg text-brand-cocoa">${store.name}</h3>
+                        <p class="text-xs text-brand-cocoa/70"><i class="fa-solid fa-location-dot text-brand-caramel mr-1.5"></i> ${store.address}</p>
+                        <p class="text-xs text-brand-cocoa/70"><i class="fa-regular fa-clock text-brand-caramel mr-1.5"></i> ${store.hours}</p>
+                    </div>
+                    <div class="pt-2">
+                        <a href="${store.mapsUrl}" target="_blank" class="w-full bg-brand-cream hover:bg-brand-sand/50 text-brand-cocoa py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider block text-center border border-brand-sand transition-all">
+                            <i class="fa-solid fa-map-location-dot mr-1.5 text-brand-crimson"></i> Google Maps
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Category Filtering
         function renderCategoryTabs() {
             const categories = ["All", ...CATEGORIES];
-            document.getElementById('category-tabs-container').innerHTML = categories.map(cat => `
-                <button onclick="setFilterCategory('${cat}')" class="px-4 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all shrink-0 ${currentFilterCategory === cat ? 'bg-brand-crimson text-white' : 'bg-brand-milk text-brand-cocoa/80 border border-brand-sand'}">
+            const container = document.getElementById('category-tabs-container');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="setFilterCategory('${cat}')" class="px-4 py-2 rounded-xl text-xs font-bold tracking-wider uppercase transition-all shrink-0 ${currentFilterCategory === cat ? 'bg-brand-crimson text-white shadow-sm' : 'bg-brand-milk text-brand-cocoa/80 border border-brand-sand hover:bg-brand-cream'}">
                     ${cat}
                 </button>
             `).join('');
         }
 
-        function setFilterCategory(cat) { currentFilterCategory = cat; renderCategoryTabs(); renderProducts(); }
-        function filterProducts() { renderProducts(); }
+        function setFilterCategory(cat) {
+            currentFilterCategory = cat;
+            renderCategoryTabs();
+            renderProducts();
+        }
 
+        function filterProducts() {
+            renderProducts();
+        }
+
+        // Product Catalog Grid Rendering
         function renderProducts() {
             const grid = document.getElementById('products-grid');
             const searchKeyword = (document.getElementById('search-input')?.value || '').toLowerCase();
-            let filtered = products.filter(p => (currentFilterCategory === "All" || p.category === currentFilterCategory) && p.name.toLowerCase().includes(searchKeyword));
 
-            if (!filtered.length) {
-                grid.innerHTML = `<p class="col-span-full text-center py-8 text-xs text-brand-cocoa/60">Tidak ada produk ditemukan.</p>`;
+            let filtered = products.filter(p => {
+                const matchesCategory = (currentFilterCategory === "All") || (p.category === currentFilterCategory);
+                const matchesSearch = p.name.toLowerCase().includes(searchKeyword) || (p.desc && p.desc.toLowerCase().includes(searchKeyword));
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 space-y-3">
+                        <i class="fa-solid fa-cookie text-3xl text-brand-caramel/40"></i>
+                        <p class="text-sm font-serif text-brand-cocoa/60">Tidak ada produk yang sesuai dengan pencarian Anda.</p>
+                    </div>
+                `;
                 return;
             }
 
-            grid.innerHTML = filtered.map(p => `
-                <div class="bg-brand-milk rounded-2xl overflow-hidden border border-brand-sand p-3 space-y-3 shadow-warm flex flex-col justify-between">
-                    <img src="${p.image}" class="w-full h-40 object-cover rounded-xl">
-                    <div>
-                        <span class="text-[9px] font-bold uppercase text-brand-caramel">${p.category}</span>
-                        <h3 class="font-serif font-bold text-sm text-brand-cocoa">${p.name}</h3>
-                        <p class="text-xs text-brand-cocoa/70">${p.desc || ''}</p>
+            grid.innerHTML = filtered.map(product => {
+                const availableSizes = Object.keys(product.sizes || { "Porsi Standard": product.price });
+                const basePriceFormatted = formatRupiah(product.price);
+                const inStock = selectedStore ? isProductInStock(product.id, selectedStore.id) : true;
+
+                return `
+                    <div class="bg-brand-milk rounded-2xl overflow-hidden border border-brand-sand shadow-warm hover:shadow-warm-hover transition-all flex flex-col group ${inStock ? '' : 'opacity-70'}">
+                        <div class="h-48 overflow-hidden relative bg-brand-cream">
+                            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${inStock ? '' : 'grayscale'}" onerror="this.src='https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop'">
+                            <span class="absolute top-3 left-3 bg-brand-milk/90 backdrop-blur-md text-brand-cocoa font-bold text-[9px] uppercase px-2.5 py-1 rounded-full border border-brand-sand/60">
+                                ${product.category}
+                            </span>
+                            ${inStock ? '' : `<span class="absolute top-3 right-3 bg-brand-crimson text-white font-bold text-[9px] uppercase px-2.5 py-1 rounded-full">Habis</span>`}
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow justify-between space-y-3">
+                            <div class="space-y-1">
+                                <h3 class="font-serif font-bold text-base text-brand-cocoa leading-snug">${product.name}</h3>
+                                <p class="text-xs text-brand-cocoa/70 line-clamp-2">${product.desc || 'Tekstur lembut dengan cita rasa khas tradisi.'}</p>
+                            </div>
+                            <div class="pt-2 border-t border-brand-sand/50 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[9px] text-brand-cocoa/50 block font-semibold uppercase">Mulai Dari</span>
+                                    <span class="font-bold text-sm text-brand-crimson">${basePriceFormatted}</span>
+                                </div>
+                                ${inStock
+                                    ? `<button onclick="openSizeModal('${product.id}')" class="bg-brand-cream hover:bg-brand-crimson hover:text-white text-brand-cocoa border border-brand-sand px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1">
+                                        <span>Pilih</span> <i class="fa-solid fa-plus text-[10px]"></i>
+                                    </button>`
+                                    : `<button disabled class="bg-brand-sand/40 text-brand-cocoa/40 border border-brand-sand px-3 py-1.5 rounded-xl text-xs font-bold cursor-not-allowed">Habis</button>`
+                                }
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between pt-2 border-t border-brand-sand">
-                        <span class="font-bold text-xs text-brand-crimson">${formatRupiah(p.price)}</span>
-                        <button onclick="openSizeModal('${p.id}')" class="bg-brand-cream hover:bg-brand-crimson hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold border border-brand-sand transition-all">+ Tambah</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        function openSizeModal(id) {
-            const product = products.find(p => p.id === id);
+        // Size Selector Modal Operations
+        function openSizeModal(productId) {
+            const product = products.find(p => p.id === productId);
             if (!product) return;
-            modalActiveProductId = id;
+            if (selectedStore && !isProductInStock(productId, selectedStore.id)) {
+                showToast('Maaf, menu ini sedang habis di cabang ini.', 'warning');
+                return;
+            }
+
+            modalActiveProductId = productId;
             document.getElementById('modal-size-prod-name').innerText = product.name;
             document.getElementById('modal-size-prod-cat').innerText = product.category;
             document.getElementById('modal-size-prod-img').src = product.image;
 
-            const sizes = product.sizes || { "Standard": product.price };
-            let first = true;
-            document.getElementById('modal-size-options').innerHTML = Object.entries(sizes).map(([name, price]) => {
-                const checked = first ? 'checked' : '';
-                first = false;
+            const sizesObj = product.sizes || { "Porsi Standard": product.price };
+            const container = document.getElementById('modal-size-options');
+            
+            let isFirst = true;
+            container.innerHTML = Object.entries(sizesObj).map(([sizeName, price]) => {
+                const checked = isFirst ? 'checked' : '';
+                isFirst = false;
                 return `
-                    <label class="border border-brand-sand p-2.5 rounded-xl flex items-center justify-between text-xs font-bold cursor-pointer">
-                        <span class="flex items-center gap-2"><input type="radio" name="modal-size-choice" value="${name}" data-price="${price}" ${checked} class="accent-brand-crimson"> ${name}</span>
-                        <span class="text-brand-crimson">${formatRupiah(price)}</span>
+                    <label class="cursor-pointer border border-brand-sand rounded-xl p-3 flex items-center justify-between hover:bg-brand-cream/50 transition-colors">
+                        <div class="flex items-center gap-2.5">
+                            <input type="radio" name="modal-size-choice" value="${sizeName}" data-price="${price}" ${checked} class="accent-brand-crimson">
+                            <span class="font-bold text-xs text-brand-cocoa">${sizeName}</span>
+                        </div>
+                        <span class="font-bold text-xs text-brand-crimson">${formatRupiah(price)}</span>
                     </label>
                 `;
             }).join('');
+
             document.getElementById('size-selector-modal').classList.remove('hidden');
         }
 
-        function closeSizeModal() { document.getElementById('size-selector-modal').classList.add('hidden'); }
-
-        function confirmAddToCartFromModal() {
-            const product = products.find(p => p.id === modalActiveProductId);
-            const radio = document.querySelector('input[name="modal-size-choice"]:checked');
-            if (product && radio) {
-                addToCart(product, radio.value, parseInt(radio.getAttribute('data-price')) || product.price);
-                closeSizeModal();
-            }
+        function closeSizeModal() {
+            document.getElementById('size-selector-modal').classList.add('hidden');
+            modalActiveProductId = null;
         }
 
+        function confirmAddToCartFromModal() {
+            if (!modalActiveProductId) return;
+            const product = products.find(p => p.id === modalActiveProductId);
+            if (!product) return;
+
+            const selectedRadio = document.querySelector('input[name="modal-size-choice"]:checked');
+            if (!selectedRadio) return;
+
+            const sizeName = selectedRadio.value;
+            const price = parseInt(selectedRadio.getAttribute('data-price')) || product.price;
+
+            addToCart(product, sizeName, price);
+            closeSizeModal();
+        }
+
+        // Shopping Cart Management
         function addToCart(product, sizeName, price) {
             const cartItemId = `${product.id}_${sizeName}`;
             const existing = shoppingCart.find(item => item.cartItemId === cartItemId);
+
             if (existing) {
                 existing.qty += 1;
             } else {
-                shoppingCart.push({ cartItemId, id: product.id, name: product.name, size: sizeName, price, qty: 1, image: product.image });
+                shoppingCart.push({
+                    cartItemId: cartItemId,
+                    id: product.id,
+                    name: product.name,
+                    size: sizeName,
+                    price: price,
+                    qty: 1,
+                    image: product.image
+                });
+            }
+
+            updateCartUI();
+            showToast(`${product.name} (${sizeName}) ditambahkan!`);
+        }
+
+        function updateCartQty(cartItemId, delta) {
+            const item = shoppingCart.find(i => i.cartItemId === cartItemId);
+            if (!item) return;
+
+            item.qty += delta;
+            if (item.qty <= 0) {
+                shoppingCart = shoppingCart.filter(i => i.cartItemId !== cartItemId);
             }
             updateCartUI();
-            showToast(`${product.name} (${sizeName}) ditambahkan.`);
         }
 
         function updateCartUI() {
-            const totalQty = shoppingCart.reduce((acc, item) => acc + item.qty, 0);
-            const grandTotal = shoppingCart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+            const totalItems = shoppingCart.reduce((sum, item) => sum + item.qty, 0);
+            const grandTotal = shoppingCart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-            document.getElementById('cart-counter-badge').innerText = totalQty;
-            document.getElementById('mobile-cart-badge').innerText = totalQty;
-            document.getElementById('mobile-bottom-total').innerText = formatRupiah(grandTotal);
+            document.getElementById('cart-counter-badge').innerText = totalItems;
+            document.getElementById('mobile-cart-badge').innerText = totalItems;
             document.getElementById('cart-grand-total').innerText = formatRupiah(grandTotal);
+            document.getElementById('mobile-bottom-total').innerText = formatRupiah(grandTotal);
 
             const container = document.getElementById('cart-items-container');
-            if (!shoppingCart.length) {
-                container.innerHTML = `<p class="text-center py-8 text-xs text-brand-cocoa/50">Keranjang masih kosong.</p>`;
+            if (shoppingCart.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 space-y-3">
+                        <i class="fa-solid fa-basket-shopping text-4xl text-brand-caramel/30"></i>
+                        <p class="text-xs text-brand-cocoa/60 font-medium">Keranjang belanja Anda masih kosong.</p>
+                        <a href="#puddings" onclick="toggleCartDrawer()" class="inline-block bg-brand-cream border border-brand-sand px-4 py-2 rounded-xl text-xs font-bold text-brand-cocoa">Buka Katalog Menu</a>
+                    </div>
+                `;
                 return;
             }
 
             container.innerHTML = shoppingCart.map(item => `
-                <div class="flex items-center justify-between bg-brand-cream/40 p-2.5 rounded-xl border border-brand-sand text-xs">
-                    <div>
-                        <h4 class="font-bold text-brand-cocoa">${item.name}</h4>
-                        <span class="text-[10px] text-brand-caramel font-semibold">${item.size} - ${formatRupiah(item.price)}</span>
+                <div class="bg-brand-cream/40 p-3 rounded-2xl border border-brand-sand/80 flex items-center justify-between gap-3">
+                    <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-brand-sand" onerror="this.src='https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop'">
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-xs text-brand-cocoa leading-tight">${item.name}</h4>
+                        <span class="text-[10px] text-brand-caramel font-semibold">${item.size} • ${formatRupiah(item.price)}</span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="changeQty('${item.cartItemId}', -1)" class="w-6 h-6 bg-white border rounded font-bold">-</button>
-                        <span class="font-bold">${item.qty}</span>
-                        <button onclick="changeQty('${item.cartItemId}', 1)" class="w-6 h-6 bg-white border rounded font-bold">+</button>
+                    <div class="flex items-center gap-1.5 shrink-0 bg-brand-milk p-1 rounded-xl border border-brand-sand">
+                        <button onclick="updateCartQty('${item.cartItemId}', -1)" class="w-6 h-6 rounded-lg bg-brand-cream hover:bg-brand-sand text-brand-cocoa font-bold text-xs flex items-center justify-center">-</button>
+                        <span class="text-xs font-extrabold w-5 text-center">${item.qty}</span>
+                        <button onclick="updateCartQty('${item.cartItemId}', 1)" class="w-6 h-6 rounded-lg bg-brand-crimson text-white font-bold text-xs flex items-center justify-center">+</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function changeQty(cartItemId, delta) {
-            const item = shoppingCart.find(i => i.cartItemId === cartItemId);
-            if (item) {
-                item.qty += delta;
-                if (item.qty <= 0) shoppingCart = shoppingCart.filter(i => i.cartItemId !== cartItemId);
-                updateCartUI();
-            }
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cart-drawer-modal');
+            drawer.classList.toggle('hidden');
         }
-
-        function toggleCartDrawer() { document.getElementById('cart-drawer-modal').classList.toggle('hidden'); }
 
         function toggleDeliveryFields() {
-            const method = document.querySelector('input[name="order-method"]:checked')?.value;
-            document.getElementById('delivery-address-block').classList.toggle('hidden', method !== "Kirim Kurir");
-        }
-
-        function toggleStaffField() {
-            const creator = document.querySelector('input[name="order-creator"]:checked')?.value;
-            document.getElementById('staff-name-block').classList.toggle('hidden', creator !== "Dipesankan oleh Staff");
-        }
-
-        function triggerCheckoutFormValidation() {
-            if (!shoppingCart.length) { showToast("Keranjang kosong!", "error"); return; }
-            const buyerName = document.getElementById('buyer-name').value.trim();
-            const buyerPhone = document.getElementById('buyer-phone').value.trim();
             const method = document.querySelector('input[name="order-method"]:checked').value;
-            const creator = document.querySelector('input[name="order-creator"]:checked').value;
-            const address = document.getElementById('buyer-address').value.trim();
-            const notes = document.getElementById('order-notes').value.trim();
-            const staffName = document.getElementById('staff-name').value.trim();
-
-            if (!buyerName || !buyerPhone) { showToast("Lengkapi Nama & No. WhatsApp!", "error"); return; }
-            if (method === "Kirim Kurir" && !address) { showToast("Isi alamat pengiriman!", "error"); return; }
-            if (creator === "Dipesankan oleh Staff" && !staffName) { showToast("Isi nama staff!", "error"); return; }
-
-            let itemsText = shoppingCart.map((i, idx) => `${idx + 1}. *${i.name}* (${i.size}) x${i.qty} = ${formatRupiah(i.price * i.qty)}`).join('\n');
-            let grandTotal = shoppingCart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-
-            let msg = `*PESANAN BARU — PUDING PANEN BALI*\n`;
-            msg += `----------------------------------------\n`;
-            msg += `*Outlet:* ${selectedStore.name}\n`;
-            msg += `*Metode Layanan:* ${method}\n`;
-            msg += `*Tipe Pemesanan:* ${creator}${creator === "Dipesankan oleh Staff" ? ` (Staff: ${staffName})` : ''}\n`;
-            msg += `*Nama Pemesan:* ${buyerName}\n`;
-            msg += `*No. WA:* ${buyerPhone}\n`;
-            if (method === "Kirim Kurir") msg += `*Alamat:* ${address}\n`;
-            if (notes) msg += `*Catatan:* ${notes}\n`;
-            msg += `----------------------------------------\n`;
-            msg += `*DETAIL PESANAN:*\n${itemsText}\n`;
-            msg += `----------------------------------------\n`;
-            msg += `*TOTAL HARGA:* ${formatRupiah(grandTotal)}\n`;
-
-            const waPhone = selectedStore.phone.startsWith('0') ? '62' + selectedStore.phone.slice(1) : selectedStore.phone;
-            window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function triggerStoreSelectionModal() { document.getElementById('store-selector-modal').classList.remove('hidden'); }
-        function selectBranch(id) {
-            const found = STORES.find(s => s.id === id);
-            if (found) {
-                selectedStore = found;
-                document.getElementById('header-branch-name').innerText = selectedStore.shortName;
-                document.getElementById('mobile-branch-name').innerText = selectedStore.shortName;
-                document.getElementById('store-selector-modal').classList.add('hidden');
-                showToast(`Cabang diubah ke: ${selectedStore.shortName}`);
+            const addressBlock = document.getElementById('delivery-address-block');
+            if (method.includes('Kurir')) {
+                addressBlock.classList.remove('hidden');
+            } else {
+                addressBlock.classList.add('hidden');
             }
         }
 
-        function renderStoreModalOptions() {
-            document.getElementById('store-options-container').innerHTML = STORES.map(s => `
-                <button onclick="selectBranch('${s.id}')" class="w-full text-left p-3 rounded-xl border border-brand-sand hover:border-brand-crimson bg-white transition-all">
-                    <span class="font-bold text-xs text-brand-cocoa block">${s.name}</span>
-                    <span class="text-[10px] text-brand-cocoa/60 block">${s.address}</span>
-                </button>
-            `).join('');
+        // WhatsApp Checkout Handler
+        function triggerCheckoutFormValidation() {
+            if (shoppingCart.length === 0) {
+                showToast("Keranjang belanja masih kosong!", "warning");
+                return;
+            }
+
+            const name = document.getElementById('buyer-name').value.trim();
+            const phone = document.getElementById('buyer-phone').value.trim();
+            const method = document.querySelector('input[name="order-method"]:checked').value;
+            const isDelivery = method.includes('Kurir');
+            const address = document.getElementById('buyer-address').value.trim();
+            const notes = document.getElementById('order-notes').value.trim();
+
+            if (!name || !phone) {
+                showToast("Mohon lengkapi Nama dan Nomor WhatsApp!", "warning");
+                return;
+            }
+
+            if (isDelivery && !address) {
+                showToast("Mohon isi alamat lengkap pengiriman!", "warning");
+                return;
+            }
+
+            let message = `*PESANAN PUDING PANEN BALI*\n`;
+            message += `--------------------------------------\n`;
+            message += `*Cabang Outlet:* ${selectedStore.name}\n`;
+            message += `*Metode Pesanan:* ${method}\n`;
+            message += `*Nama Pemesan:* ${name}\n`;
+            message += `*No. WhatsApp:* ${phone}\n`;
+            if (isDelivery) {
+                message += `*Alamat Pengiriman:* ${address}\n`;
+            }
+            if (notes) {
+                message += `*Catatan:* ${notes}\n`;
+            }
+            message += `--------------------------------------\n`;
+            message += `*RINCIAN MENU PESANAN:*\n`;
+
+            let grandTotal = 0;
+            shoppingCart.forEach((item, idx) => {
+                const itemTotal = item.price * item.qty;
+                grandTotal += itemTotal;
+                message += `${idx + 1}. ${item.name} (${item.size})\n   Qty: ${item.qty} x ${formatRupiah(item.price)} = ${formatRupiah(itemTotal)}\n`;
+            });
+
+            message += `--------------------------------------\n`;
+            message += `*TOTAL PEMBAYARAN: ${formatRupiah(grandTotal)}*\n\n`;
+            message += `Mohon konfirmasi ketersediaan stok & petunjuk pembayaran. Terima kasih!`;
+
+            const encoded = encodeURIComponent(message);
+            const waUrl = `https://wa.me/${selectedStore.phone}?text=${encoded}`;
+            window.open(waUrl, '_blank');
         }
 
-        function renderStoresSection() {
-            document.getElementById('stores-grid-container').innerHTML = STORES.map(s => `
-                <div class="bg-brand-milk p-6 rounded-3xl border border-brand-sand shadow-warm space-y-3">
-                    <h3 class="font-serif font-bold text-lg text-brand-cocoa">${s.name}</h3>
-                    <p class="text-xs text-brand-cocoa/70"><i class="fa-solid fa-location-dot text-brand-caramel mr-1"></i> ${s.address}</p>
-                    <p class="text-xs text-brand-cocoa/70"><i class="fa-regular fa-clock text-brand-caramel mr-1"></i> ${s.hours}</p>
+        // ==================== ADMIN AUTH ====================
+        function openAdminGate() {
+            document.getElementById('admin-gate-modal').classList.remove('hidden');
+        }
+
+        function closeAdminGate() {
+            document.getElementById('admin-gate-modal').classList.add('hidden');
+            document.getElementById('admin-login-error').classList.add('hidden');
+        }
+
+        function handleAdminVerification(e) {
+            e.preventDefault();
+            const username = document.getElementById('admin-username').value.trim().toLowerCase();
+            const password = document.getElementById('admin-passcode').value;
+            const errorEl = document.getElementById('admin-login-error');
+
+            const admin = ADMINS.find(a => a.username.toLowerCase() === username && a.password === password);
+            if (admin) {
+                currentAdmin = admin;
+                errorEl.classList.add('hidden');
+                document.getElementById('admin-username').value = '';
+                document.getElementById('admin-passcode').value = '';
+                closeAdminGate();
+                openAdminDashboard();
+                showToast(`Selamat datang, ${admin.name}!`);
+            } else {
+                errorEl.innerText = 'Username atau password salah.';
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            currentAdmin = null;
+            closeAdminDashboard();
+            showToast('Berhasil logout dari dashboard admin.');
+        }
+
+        function switchAdminTab(tab) {
+            const tabs = ['stock', 'catalog', 'categories', 'promo', 'branches', 'admins', 'password'];
+            tabs.forEach(t => {
+                const panel = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tabbtn-${t}`);
+                if (panel) panel.classList.toggle('hidden', t !== tab);
+                if (btn) {
+                    btn.classList.toggle('bg-brand-crimson', t === tab);
+                    btn.classList.toggle('text-white', t === tab);
+                    btn.classList.toggle('bg-brand-milk', t !== tab);
+                    btn.classList.toggle('border', t !== tab);
+                    btn.classList.toggle('border-brand-sand', t !== tab);
+                    btn.classList.toggle('text-brand-cocoa', t !== tab);
+                }
+            });
+        }
+
+        function openAdminDashboard() {
+            if (!currentAdmin) return;
+
+            document.getElementById('admin-current-name').innerText = currentAdmin.name;
+            const branch = STORES.find(s => s.id === currentAdmin.branchId);
+            document.getElementById('admin-current-role').innerText = currentAdmin.role === 'superadmin' ? 'Super Admin' : `Admin Cabang ${branch ? branch.shortName : ''}`;
+
+            const isSuper = currentAdmin.role === 'superadmin';
+            document.querySelectorAll('.superadmin-only-tab').forEach(el => el.classList.toggle('hidden', !isSuper));
+            const resetBtn = document.getElementById('reset-default-btn');
+            if (resetBtn) resetBtn.classList.toggle('hidden', !isSuper);
+
+            renderStockTab();
+
+            if (isSuper) {
+                renderProductCategoryOptions();
+                resetAdminProductForm();
+                renderAdminInventoryTable();
+                renderCategoryManagementList();
+                renderPromoForm();
+                resetBranchForm();
+                renderBranchManagementList();
+                renderAdminBranchOptions();
+                toggleAdminRoleFields();
+                renderAdminManagementList();
+            }
+
+            switchAdminTab(isSuper ? 'catalog' : 'stock');
+            document.getElementById('admin-dashboard-modal').classList.remove('hidden');
+        }
+
+        function closeAdminDashboard() {
+            document.getElementById('admin-dashboard-modal').classList.add('hidden');
+            resetAdminProductForm();
+        }
+
+        // Guard: only Super Admin may touch menu/kategori/cabang/admin/promo data,
+        // even if someone tries to call these functions directly (e.g. via console).
+        function requireSuperAdmin() {
+            if (!currentAdmin || currentAdmin.role !== 'superadmin') {
+                showToast('Hanya Super Admin yang bisa melakukan aksi ini.', 'warning');
+                return false;
+            }
+            return true;
+        }
+
+        // ==================== KATEGORI CRUD ====================
+        function renderProductCategoryOptions() {
+            const select = document.getElementById('admin-prod-category');
+            if (!select) return;
+            const current = select.value;
+            select.innerHTML = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+            if (CATEGORIES.includes(current)) select.value = current;
+        }
+
+        function renderCategoryManagementList() {
+            const container = document.getElementById('category-management-list');
+            if (!container) return;
+            container.innerHTML = CATEGORIES.map(cat => {
+                const count = products.filter(p => p.category === cat).length;
+                const safe = cat.replace(/'/g, "\\'");
+                return `
+                <div class="flex items-center justify-between p-3 bg-brand-milk border border-brand-sand rounded-xl">
+                    <div>
+                        <span class="font-bold text-xs text-brand-cocoa block">${cat}</span>
+                        <span class="block text-[10px] text-brand-cocoa/50">${count} produk</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="renameCategoryPrompt('${safe}')" class="px-2.5 py-1 bg-brand-cream hover:bg-brand-sand text-brand-cocoa rounded-lg font-bold text-[10px]"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                        <button onclick="deleteCategoryPrompt('${safe}')" class="px-2.5 py-1 bg-red-100 hover:bg-brand-crimson hover:text-white text-brand-crimson rounded-lg font-bold text-[10px]"><i class="fa-solid fa-trash"></i> Hapus</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function handleCategoryAdd(e) {
+            e.preventDefault();
+            if (!requireSuperAdmin()) return;
+            const input = document.getElementById('new-category-name');
+            const name = input.value.trim();
+            if (!name) return;
+            if (CATEGORIES.includes(name)) {
+                showToast('Kategori sudah ada!', 'warning');
+                return;
+            }
+            CATEGORIES.push(name);
+            saveCategoriesToStorage();
+            renderCategoryManagementList();
+            renderProductCategoryOptions();
+            renderCategoryTabs();
+            input.value = '';
+            showToast(`Kategori '${name}' ditambahkan!`);
+        }
+
+        function renameCategoryPrompt(oldName) {
+            if (!requireSuperAdmin()) return;
+            const newName = prompt('Ubah nama kategori:', oldName);
+            if (!newName || !newName.trim() || newName.trim() === oldName) return;
+            const trimmed = newName.trim();
+            if (CATEGORIES.includes(trimmed)) {
+                showToast('Nama kategori sudah dipakai!', 'warning');
+                return;
+            }
+            CATEGORIES = CATEGORIES.map(c => c === oldName ? trimmed : c);
+            products.forEach(p => { if (p.category === oldName) p.category = trimmed; });
+            saveCategoriesToStorage();
+            saveProductsToStorage();
+            renderCategoryManagementList();
+            renderProductCategoryOptions();
+            renderCategoryTabs();
+            renderProducts();
+            renderAdminInventoryTable();
+            showToast(`Kategori diubah menjadi '${trimmed}'.`);
+        }
+
+        function deleteCategoryPrompt(cat) {
+            if (!requireSuperAdmin()) return;
+            const used = products.filter(p => p.category === cat).length;
+            if (used > 0) {
+                showToast(`Tidak bisa hapus, masih dipakai ${used} produk. Pindahkan produk itu dulu.`, 'warning');
+                return;
+            }
+            if (CATEGORIES.length <= 1) {
+                showToast('Minimal harus ada 1 kategori.', 'warning');
+                return;
+            }
+            if (!confirm(`Hapus kategori "${cat}"?`)) return;
+            CATEGORIES = CATEGORIES.filter(c => c !== cat);
+            saveCategoriesToStorage();
+            renderCategoryManagementList();
+            renderProductCategoryOptions();
+            renderCategoryTabs();
+            showToast(`Kategori '${cat}' dihapus.`);
+        }
+
+        // ==================== STOK (SEMUA ADMIN, TOKO ADMIN HANYA CABANG SENDIRI) ====================
+        function renderStockTab() {
+            if (!currentAdmin) return;
+            const isSuper = currentAdmin.role === 'superadmin';
+            const branchesToShow = isSuper ? STORES : STORES.filter(s => s.id === currentAdmin.branchId);
+
+            const infoEl = document.getElementById('stock-tab-info-text');
+            if (infoEl) {
+                infoEl.innerText = isSuper
+                    ? 'Pantau & ubah status stok tiap menu di semua cabang. Untuk mengubah nama, harga, foto, atau kategori menu, gunakan tab Katalog.'
+                    : `Tandai menu yang habis hari ini di cabang ${branchesToShow[0] ? branchesToShow[0].shortName : ''}. Anda tidak bisa mengubah nama, harga, foto, atau kategori menu — hubungi Super Admin untuk itu.`;
+            }
+
+            const head = document.getElementById('stock-table-head');
+            if (head) {
+                head.innerHTML = `<th class="p-3">Gambar</th><th class="p-3">Nama Produk</th><th class="p-3">Kategori</th>` +
+                    branchesToShow.map(b => `<th class="p-3 text-center">${b.shortName}</th>`).join('');
+            }
+
+            const body = document.getElementById('stock-table-body');
+            if (body) {
+                body.innerHTML = products.map(p => `
+                    <tr class="hover:bg-brand-cream/40">
+                        <td class="p-3"><img src="${p.image}" class="w-10 h-10 object-cover rounded-lg border border-brand-sand" onerror="this.src='https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop'"></td>
+                        <td class="p-3 font-bold text-brand-cocoa">${p.name}</td>
+                        <td class="p-3"><span class="bg-brand-cream px-2 py-0.5 rounded text-[10px] font-semibold">${p.category}</span></td>
+                        ${branchesToShow.map(b => {
+                            const inStock = isProductInStock(p.id, b.id);
+                            return `<td class="p-3 text-center">
+                                <button onclick="toggleStock('${p.id}','${b.id}')" class="px-2.5 py-1 rounded-lg font-bold text-[10px] transition-all ${inStock ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-red-100 text-brand-crimson hover:bg-red-200'}">
+                                    <i class="fa-solid ${inStock ? 'fa-check' : 'fa-xmark'} mr-1"></i>${inStock ? 'Tersedia' : 'Habis'}
+                                </button>
+                            </td>`;
+                        }).join('')}
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // ==================== PROMO BANNER (SUPERADMIN ONLY) ====================
+        function renderPromoBanner() {
+            const banner = document.getElementById('promo-banner');
+            if (!banner) return;
+            if (!promoSettings.enabled) {
+                banner.style.display = 'none';
+                return;
+            }
+            banner.style.display = '';
+            document.getElementById('promo-badge-label').innerText = promoSettings.badge;
+            document.getElementById('promo-headline-text').innerText = promoSettings.headline;
+            document.getElementById('promo-detail-text').innerText = ' ' + promoSettings.detail;
+            document.getElementById('promo-expiry-text').innerText = promoSettings.expiry;
+        }
+
+        function renderPromoForm() {
+            document.getElementById('promo-enabled-input').checked = !!promoSettings.enabled;
+            document.getElementById('promo-badge-input').value = promoSettings.badge || '';
+            document.getElementById('promo-headline-input').value = promoSettings.headline || '';
+            document.getElementById('promo-detail-input').value = promoSettings.detail || '';
+            document.getElementById('promo-expiry-input').value = promoSettings.expiry || '';
+        }
+
+        function handlePromoSave(e) {
+            e.preventDefault();
+            if (!requireSuperAdmin()) return;
+            promoSettings = {
+                enabled: document.getElementById('promo-enabled-input').checked,
+                badge: document.getElementById('promo-badge-input').value.trim() || 'Promo Spesial',
+                headline: document.getElementById('promo-headline-input').value.trim(),
+                detail: document.getElementById('promo-detail-input').value.trim(),
+                expiry: document.getElementById('promo-expiry-input').value.trim()
+            };
+            savePromoToStorage();
+            renderPromoBanner();
+            showToast('Pengaturan promo disimpan!');
+        }
+
+        // ==================== CABANG CRUD (SUPERADMIN) ====================
+        function slugify(text) {
+            return text.toString().toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        }
+
+        function renderBranchManagementList() {
+            const container = document.getElementById('branch-management-list');
+            if (!container) return;
+            container.innerHTML = STORES.map(s => `
+                <div class="flex items-center justify-between p-3 bg-brand-milk border border-brand-sand rounded-xl">
+                    <div>
+                        <span class="font-bold text-xs text-brand-cocoa block">${s.shortName}</span>
+                        <span class="block text-[10px] text-brand-cocoa/50">${s.address}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button onclick="editBranchPrompt('${s.id}')" class="px-2.5 py-1 bg-brand-cream hover:bg-brand-sand text-brand-cocoa rounded-lg font-bold text-[10px]"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+                        <button onclick="deleteBranchPrompt('${s.id}')" class="px-2.5 py-1 bg-red-100 hover:bg-brand-crimson hover:text-white text-brand-crimson rounded-lg font-bold text-[10px]"><i class="fa-solid fa-trash"></i> Hapus</button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function openAdminGate() { document.getElementById('admin-gate-modal').classList.remove('hidden'); }
-        function closeAdminGate() { document.getElementById('admin-gate-modal').classList.add('hidden'); }
-        function handleAdminVerification(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('admin-username').value.trim();
-            const passcodeInput = document.getElementById('admin-passcode').value.trim();
+        function resetBranchForm() {
+            const form = document.getElementById('admin-branch-form');
+            if (!form) return;
+            form.reset();
+            document.getElementById('admin-branch-id').value = '';
+            document.getElementById('branch-form-title').innerText = 'Tambah Cabang Baru';
+        }
 
-            // Super Admin Verification
-            if (usernameInput.toLowerCase() === 'michael' && passcodeInput === '1908') {
-                showToast("Login Berhasil! Selamat Datang, Super Admin Michael.");
-                closeAdminGate();
-                document.getElementById('admin-username').value = '';
-                document.getElementById('admin-passcode').value = '';
+        function editBranchPrompt(id) {
+            const s = STORES.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('admin-branch-id').value = s.id;
+            document.getElementById('admin-branch-name').value = s.shortName;
+            document.getElementById('admin-branch-address').value = s.address;
+            document.getElementById('admin-branch-hours').value = s.hours;
+            document.getElementById('admin-branch-phone').value = s.phone;
+            document.getElementById('admin-branch-maps').value = s.mapsUrl;
+            document.getElementById('branch-form-title').innerText = `Edit Cabang: ${s.shortName}`;
+        }
+
+        function handleBranchSave(e) {
+            e.preventDefault();
+            if (!requireSuperAdmin()) return;
+            const id = document.getElementById('admin-branch-id').value;
+            const shortName = document.getElementById('admin-branch-name').value.trim();
+            const address = document.getElementById('admin-branch-address').value.trim();
+            const hours = document.getElementById('admin-branch-hours').value.trim() || '08.00 - 21.00 WITA';
+            const phone = document.getElementById('admin-branch-phone').value.trim();
+            const mapsUrl = document.getElementById('admin-branch-maps').value.trim() || `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+
+            if (!shortName || !address || !phone) return;
+
+            if (id) {
+                const idx = STORES.findIndex(s => s.id === id);
+                if (idx !== -1) {
+                    STORES[idx] = { ...STORES[idx], shortName, name: `Puding Panen Bali ${shortName}`, address, hours, phone, mapsUrl };
+                    showToast(`Cabang '${shortName}' diperbarui.`);
+                }
             } else {
-                showToast("Username atau Passcode Admin Salah!", "error");
+                const newId = slugify(shortName) + '_' + Date.now().toString().slice(-4);
+                STORES.push({ id: newId, name: `Puding Panen Bali ${shortName}`, shortName, address, hours, phone, mapsUrl });
+                showToast(`Cabang '${shortName}' ditambahkan.`);
+            }
+            saveStoresToStorage();
+            renderBranchManagementList();
+            renderAdminBranchOptions();
+            renderStoresSection();
+            renderStoreOptions();
+            resetBranchForm();
+        }
+
+        function deleteBranchPrompt(id) {
+            if (!requireSuperAdmin()) return;
+            if (STORES.length <= 1) {
+                showToast('Minimal harus ada 1 cabang aktif.', 'warning');
+                return;
+            }
+            const branchAdmins = ADMINS.filter(a => a.branchId === id);
+            if (branchAdmins.length > 0) {
+                showToast('Tidak bisa hapus, masih ada admin yang terhubung ke cabang ini.', 'warning');
+                return;
+            }
+            const s = STORES.find(x => x.id === id);
+            if (!s) return;
+            if (!confirm(`Hapus cabang "${s.shortName}"?`)) return;
+            STORES = STORES.filter(x => x.id !== id);
+            if (selectedStore.id === id) {
+                selectedStore = STORES[0];
+                document.getElementById('header-branch-name').innerText = selectedStore.shortName;
+                document.getElementById('mobile-branch-name').innerText = selectedStore.shortName;
+            }
+            saveStoresToStorage();
+            renderBranchManagementList();
+            renderAdminBranchOptions();
+            renderStoresSection();
+            renderStoreOptions();
+            showToast(`Cabang '${s.shortName}' dihapus.`);
+        }
+
+        // ==================== KELOLA ADMIN CRUD (SUPERADMIN) ====================
+        function renderAdminBranchOptions() {
+            const select = document.getElementById('admin-new-branch');
+            if (!select) return;
+            select.innerHTML = STORES.map(s => `<option value="${s.id}">${s.shortName}</option>`).join('');
+        }
+
+        function toggleAdminRoleFields() {
+            const roleSelect = document.getElementById('admin-new-role');
+            const wrap = document.getElementById('admin-new-branch-wrap');
+            if (!roleSelect || !wrap) return;
+            wrap.classList.toggle('hidden', roleSelect.value !== 'branch');
+        }
+
+        function renderAdminManagementList() {
+            const container = document.getElementById('admin-management-list');
+            if (!container) return;
+            container.innerHTML = ADMINS.map(a => {
+                const branch = STORES.find(s => s.id === a.branchId);
+                const roleLabel = a.role === 'superadmin' ? 'Super Admin' : `Admin Cabang - ${branch ? branch.shortName : '-'}`;
+                const isSelf = currentAdmin && a.id === currentAdmin.id;
+                return `
+                <div class="flex items-center justify-between p-3 bg-brand-milk border border-brand-sand rounded-xl">
+                    <div>
+                        <span class="font-bold text-xs text-brand-cocoa block">${a.name} <span class="text-[10px] text-brand-cocoa/50 font-normal">(@${a.username})</span></span>
+                        <span class="block text-[10px] text-brand-caramel font-semibold">${roleLabel}${isSelf ? ' &middot; Akun Anda' : ''}</span>
+                    </div>
+                    <button onclick="deleteAdminAccountPrompt('${a.id}')" ${isSelf ? 'disabled title="Tidak bisa hapus akun sendiri"' : ''} class="px-2.5 py-1 rounded-lg font-bold text-[10px] ${isSelf ? 'bg-brand-cream text-brand-cocoa/30 cursor-not-allowed' : 'bg-red-100 hover:bg-brand-crimson hover:text-white text-brand-crimson'}"><i class="fa-solid fa-trash"></i> Hapus</button>
+                </div>`;
+            }).join('');
+        }
+
+        function handleAdminAccountSave(e) {
+            e.preventDefault();
+            if (!requireSuperAdmin()) return;
+            const name = document.getElementById('admin-new-name').value.trim();
+            const username = document.getElementById('admin-new-username').value.trim().toLowerCase();
+            const password = document.getElementById('admin-new-password').value;
+            const role = document.getElementById('admin-new-role').value;
+            const branchId = role === 'branch' ? document.getElementById('admin-new-branch').value : null;
+
+            if (!name || !username || !password) return;
+            if (password.length < 6) {
+                showToast('Password minimal 6 karakter.', 'warning');
+                return;
+            }
+            if (ADMINS.find(a => a.username.toLowerCase() === username)) {
+                showToast('Username sudah dipakai!', 'warning');
+                return;
+            }
+
+            ADMINS.push({ id: 'admin_' + Date.now(), username, password, name, role, branchId });
+            saveAdminsToStorage();
+            renderAdminManagementList();
+            document.getElementById('admin-account-form').reset();
+            toggleAdminRoleFields();
+            showToast(`Admin '${name}' berhasil ditambahkan.`);
+        }
+
+        function deleteAdminAccountPrompt(id) {
+            if (!requireSuperAdmin()) return;
+            if (currentAdmin && id === currentAdmin.id) {
+                showToast('Tidak bisa menghapus akun yang sedang digunakan.', 'warning');
+                return;
+            }
+            const target = ADMINS.find(a => a.id === id);
+            if (!target) return;
+            const remainingSuperadmins = ADMINS.filter(a => a.role === 'superadmin' && a.id !== id).length;
+            if (target.role === 'superadmin' && remainingSuperadmins === 0) {
+                showToast('Minimal harus ada 1 Super Admin.', 'warning');
+                return;
+            }
+            if (!confirm(`Hapus admin "${target.name}"?`)) return;
+            ADMINS = ADMINS.filter(a => a.id !== id);
+            saveAdminsToStorage();
+            renderAdminManagementList();
+            showToast(`Admin '${target.name}' dihapus.`);
+        }
+
+        // ==================== GANTI PASSWORD SAYA ====================
+        function handleChangePassword(e) {
+            e.preventDefault();
+            const oldPass = document.getElementById('pw-current').value;
+            const newPass = document.getElementById('pw-new').value;
+            const confirmPass = document.getElementById('pw-confirm').value;
+
+            if (!currentAdmin || currentAdmin.password !== oldPass) {
+                showToast('Password saat ini salah!', 'warning');
+                return;
+            }
+            if (newPass.length < 6) {
+                showToast('Password baru minimal 6 karakter.', 'warning');
+                return;
+            }
+            if (newPass !== confirmPass) {
+                showToast('Konfirmasi password baru tidak cocok.', 'warning');
+                return;
+            }
+
+            const idx = ADMINS.findIndex(a => a.id === currentAdmin.id);
+            if (idx === -1) return;
+            ADMINS[idx].password = newPass;
+            currentAdmin = ADMINS[idx];
+            saveAdminsToStorage();
+            document.getElementById('change-password-form').reset();
+            showToast('Password berhasil diubah!');
+        }
+
+        // ==================== SUMBER FOTO PRODUK (UPLOAD / GOOGLE DRIVE) ====================
+        function setImageSourceMode(mode) {
+            imageSourceMode = mode;
+            const fileInput = document.getElementById('admin-prod-image-file');
+            const urlInput = document.getElementById('admin-prod-image');
+            const btnUpload = document.getElementById('img-mode-btn-upload');
+            const btnDrive = document.getElementById('img-mode-btn-drive');
+            if (mode === 'upload') {
+                fileInput.classList.remove('hidden');
+                urlInput.classList.add('hidden');
+                btnUpload.classList.add('bg-brand-crimson', 'text-white', 'border-brand-crimson');
+                btnDrive.classList.remove('bg-brand-crimson', 'text-white', 'border-brand-crimson');
+            } else {
+                fileInput.classList.add('hidden');
+                urlInput.classList.remove('hidden');
+                btnDrive.classList.add('bg-brand-crimson', 'text-white', 'border-brand-crimson');
+                btnUpload.classList.remove('bg-brand-crimson', 'text-white', 'border-brand-crimson');
             }
         }
-        function dismissPromoBanner() { document.getElementById('promo-banner').style.display = 'none'; }
-        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
-        function resetToHome() { setFilterCategory("All"); }
+
+        function handleImageFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Ukuran gambar maksimal 2MB agar tidak membebani penyimpanan browser.', 'warning');
+                e.target.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                document.getElementById('admin-prod-image').value = ev.target.result;
+                showImagePreview(ev.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function normalizeImageUrl(url) {
+            if (!url) return url;
+            if (url.includes('drive.google.com')) {
+                const driveMatch = url.match(/\/d\/([^/]+)/) || url.match(/[?&]id=([^&]+)/);
+                if (driveMatch) return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+            }
+            return url;
+        }
+
+        function showImagePreview(src) {
+            const wrap = document.getElementById('admin-prod-image-preview-wrap');
+            const img = document.getElementById('admin-prod-image-preview');
+            if (!src) { wrap.classList.add('hidden'); return; }
+            img.src = src;
+            img.onerror = function() { wrap.classList.add('hidden'); };
+            wrap.classList.remove('hidden');
+        }
+
+        // ==================== VARIAN UKURAN DINAMIS ====================
+        function addSizeRow(name = '', price = '') {
+            const container = document.getElementById('admin-size-rows');
+            const rowId = 'size-row-' + Date.now() + Math.floor(Math.random() * 1000);
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2';
+            row.id = rowId;
+            row.innerHTML = `
+                <input type="text" placeholder="Nama ukuran (mis. Cup Kecil)" value="${name}" class="flex-grow p-1.5 border border-brand-sand rounded-lg text-[11px] size-row-name">
+                <input type="number" placeholder="Harga" value="${price}" class="w-28 p-1.5 border border-brand-sand rounded-lg text-[11px] size-row-price">
+                <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-brand-crimson px-2 hover:text-brand-crimsonHover"><i class="fa-solid fa-trash text-xs"></i></button>
+            `;
+            container.appendChild(row);
+        }
+
+        function clearSizeRows() {
+            const container = document.getElementById('admin-size-rows');
+            if (container) container.innerHTML = '';
+        }
+
+        function collectSizesFromForm() {
+            const rows = document.querySelectorAll('#admin-size-rows > div');
+            let sizesObj = {};
+            rows.forEach(row => {
+                const name = row.querySelector('.size-row-name').value.trim();
+                const price = parseInt(row.querySelector('.size-row-price').value);
+                if (name && price) sizesObj[name] = price;
+            });
+            return sizesObj;
+        }
+
+        // ==================== ADMIN INVENTORY TABLE & PRODUCT CRUD ====================
+        function renderAdminInventoryTable() {
+            const tbody = document.getElementById('admin-products-table-body');
+            const titleEl = document.getElementById('admin-inventory-title');
+            if (titleEl) titleEl.innerText = `Daftar Menu Produk (${products.length} Items)`;
+            tbody.innerHTML = products.map(p => `
+                <tr class="hover:bg-brand-cream/40">
+                    <td class="p-3">
+                        <img src="${p.image}" class="w-10 h-10 object-cover rounded-lg border border-brand-sand" onerror="this.src='https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop'">
+                    </td>
+                    <td class="p-3 font-bold text-brand-cocoa">${p.name}</td>
+                    <td class="p-3"><span class="bg-brand-cream px-2 py-0.5 rounded text-[10px] font-semibold">${p.category}</span></td>
+                    <td class="p-3 font-bold text-brand-crimson">${formatRupiah(p.price)}</td>
+                    <td class="p-3 text-right space-x-1">
+                        <button onclick="editProductPrompt('${p.id}')" class="px-2.5 py-1 bg-brand-cream hover:bg-brand-sand text-brand-cocoa rounded-lg font-bold text-[10px]" title="Edit Produk">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button onclick="openDeleteConfirmModal('${p.id}')" class="px-2.5 py-1 bg-red-100 hover:bg-brand-crimson hover:text-white text-brand-crimson rounded-lg font-bold text-[10px]" title="Hapus Produk">
+                            <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function resetAdminProductForm() {
+            const form = document.getElementById('admin-product-form');
+            if (!form) return;
+            form.reset();
+            document.getElementById('admin-prod-id').value = '';
+            document.getElementById('admin-form-title').innerHTML = `<i class="fa-solid fa-plus-circle text-brand-crimson mr-1"></i> Tambah Produk Baru`;
+            document.getElementById('editing-indicator').classList.add('hidden');
+            renderProductCategoryOptions();
+            clearSizeRows();
+            addSizeRow();
+            setImageSourceMode('upload');
+            document.getElementById('admin-prod-image').value = '';
+            showImagePreview('');
+        }
+
+        function editProductPrompt(productId) {
+            const p = products.find(item => item.id === productId);
+            if (!p) return;
+
+            document.getElementById('admin-prod-id').value = p.id;
+            document.getElementById('admin-prod-name').value = p.name;
+            renderProductCategoryOptions();
+            document.getElementById('admin-prod-category').value = p.category;
+            document.getElementById('admin-prod-price').value = p.price;
+            document.getElementById('admin-prod-desc').value = p.desc || '';
+
+            setImageSourceMode('drive');
+            document.getElementById('admin-prod-image').value = p.image || '';
+            showImagePreview(p.image || '');
+
+            clearSizeRows();
+            const sizeEntries = Object.entries(p.sizes || {});
+            if (sizeEntries.length === 0) {
+                addSizeRow();
+            } else {
+                sizeEntries.forEach(([sizeName, sizePrice]) => addSizeRow(sizeName, sizePrice));
+            }
+
+            document.getElementById('admin-form-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-brand-crimson mr-1"></i> Edit Produk: ${p.name}`;
+            document.getElementById('editing-indicator').classList.remove('hidden');
+
+            switchAdminTab('catalog');
+            document.getElementById('admin-product-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function handleAdminProductSave(e) {
+            e.preventDefault();
+            if (!requireSuperAdmin()) return;
+            const id = document.getElementById('admin-prod-id').value;
+            const name = document.getElementById('admin-prod-name').value.trim();
+            const category = document.getElementById('admin-prod-category').value;
+            const price = parseInt(document.getElementById('admin-prod-price').value) || 0;
+            const desc = document.getElementById('admin-prod-desc').value.trim();
+
+            let image = document.getElementById('admin-prod-image').value.trim();
+            if (imageSourceMode === 'drive') image = normalizeImageUrl(image);
+            if (!image) image = 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=800&auto=format&fit=crop';
+
+            let sizesObj = collectSizesFromForm();
+            if (Object.keys(sizesObj).length === 0) {
+                sizesObj["Porsi Standard"] = price;
+            }
+
+            if (id) {
+                // EDIT EXISTING
+                const index = products.findIndex(p => p.id === id);
+                if (index !== -1) {
+                    products[index] = { id, name, category, price, image, desc, sizes: sizesObj };
+                    showToast(`Produk '${name}' berhasil diperbarui!`);
+                }
+            } else {
+                // CREATE NEW
+                const newId = 'p_' + Date.now();
+                products.unshift({ id: newId, name, category, price, image, desc, sizes: sizesObj });
+                showToast(`Produk baru '${name}' ditambahkan!`);
+            }
+
+            saveProductsToStorage();
+            renderProducts();
+            renderAdminInventoryTable();
+            renderCategoryManagementList();
+            resetAdminProductForm();
+        }
+
+        function openDeleteConfirmModal(productId) {
+            const p = products.find(item => item.id === productId);
+            if (!p) return;
+            deleteTargetId = productId;
+            document.getElementById('delete-target-name').innerText = `"${p.name}"`;
+            document.getElementById('delete-confirm-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteConfirmModal() {
+            document.getElementById('delete-confirm-modal').classList.add('hidden');
+            deleteTargetId = null;
+        }
+
+        function executeDeleteProduct() {
+            if (!requireSuperAdmin()) return;
+            if (!deleteTargetId) return;
+            const p = products.find(item => item.id === deleteTargetId);
+            const name = p ? p.name : 'Produk';
+
+            products = products.filter(item => item.id !== deleteTargetId);
+            saveProductsToStorage();
+            renderProducts();
+            renderAdminInventoryTable();
+            closeDeleteConfirmModal();
+            showToast(`Produk '${name}' telah dihapus dari katalog.`, "warning");
+        }
+
+        function restoreDefaultCatalogPrompt() {
+            if (!currentAdmin || currentAdmin.role !== 'superadmin') {
+                showToast('Hanya Super Admin yang bisa reset katalog.', 'warning');
+                return;
+            }
+            products = [...DEFAULT_PRODUCTS];
+            saveProductsToStorage();
+            renderProducts();
+            renderAdminInventoryTable();
+            showToast("Katalog menu berhasil dikembalikan ke standar awal!");
+        }
+
+        // Accordion Toggle logic
+        function toggleFAQ(index) {
+            const ans = document.getElementById(`faq-ans-${index}`);
+            const icon = document.getElementById(`faq-icon-${index}`);
+            if (ans.classList.contains('open')) {
+                ans.classList.remove('open');
+                icon.className = 'fa-solid fa-plus text-brand-caramel text-xs transition-transform';
+            } else {
+                ans.classList.add('open');
+                icon.className = 'fa-solid fa-minus text-brand-crimson text-xs transition-transform';
+            }
+        }
+
+        // Utility Helpers
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+        }
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const bgColor = type === "warning" ? "bg-brand-cocoa text-brand-gold" : "bg-brand-crimson text-white";
+            const icon = type === "warning" ? "fa-circle-exclamation" : "fa-circle-check";
+
+            toast.className = `${bgColor} px-4 py-3 rounded-2xl shadow-xl border border-white/20 text-xs font-bold flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 pointer-events-auto`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
     </script>
 </body>
 </html>
