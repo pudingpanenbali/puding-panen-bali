@@ -2501,22 +2501,38 @@
         function renderAdminProducts() {
             const container = document.getElementById('admin-products-list');
             container.innerHTML = appData.products.map(p => `
-                <div class="bg-white p-4 rounded-2xl border border-brand-100 shadow-sm flex gap-3 text-xs">
-                    <img src="${p.image}" class="w-16 h-16 object-cover rounded-xl border">
+                <div class="bg-white p-4 rounded-2xl border ${p.isBestSeller ? 'border-amber-300' : 'border-brand-100'} shadow-sm flex gap-3 text-xs">
+                    <img src="${p.image}" class="w-16 h-16 object-cover rounded-xl border flex-shrink-0">
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between">
+                        <div class="flex items-center justify-between gap-2">
                             <span class="font-bold text-brand-900 text-sm truncate">${p.name}</span>
-                            <span class="text-[10px] px-2 py-0.5 rounded bg-brand-100 text-brand-800 font-bold">${p.category}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded bg-brand-100 text-brand-800 font-bold whitespace-nowrap">${p.category}</span>
                         </div>
                         <p class="font-bold text-brand-600 mt-0.5">Rp ${p.price.toLocaleString('id-ID')}</p>
                         <p class="text-[10px] text-brand-500">Stok: ${p.inStock ? 'Ready' : 'Habis'}</p>
-                        <div class="flex items-center gap-2 mt-2">
+                        <div class="flex items-center gap-2 mt-2 flex-wrap">
+                            <button onclick="toggleBestSeller('${p.id}')" class="px-2.5 py-1 rounded-md font-bold flex items-center gap-1 transition ${p.isBestSeller ? 'bg-amber-100 hover:bg-amber-200 text-amber-800' : 'bg-brand-50 hover:bg-brand-100 text-brand-500 border border-brand-200'}">
+                                <i class="fa-solid fa-star"></i> ${p.isBestSeller ? 'Best Seller' : 'Jadikan Best Seller'}
+                            </button>
                             <button onclick="editProduct('${p.id}')" class="px-2.5 py-1 bg-brand-100 hover:bg-brand-200 text-brand-900 rounded-md font-bold">Edit</button>
                             <button onclick="deleteProduct('${p.id}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-md font-bold">Hapus</button>
                         </div>
                     </div>
                 </div>
             `).join('');
+        }
+
+        async function toggleBestSeller(id) {
+            const p = appData.products.find(x => x.id === id);
+            if (!p) return;
+            const newVal = !p.isBestSeller;
+            const { error } = await sb.from('products').update({ is_bestseller: newVal }).eq('id', id);
+            if (error) { showToast("Gagal mengubah status Best Seller.", "error"); return; }
+            p.isBestSeller = newVal;
+            renderAdminProducts();
+            renderCatalog();
+            renderBestsellersHome();
+            showToast(newVal ? `${p.name} ditandai sebagai Best Seller!` : `${p.name} dihapus dari Best Seller.`);
         }
 
         function openProductEditorModal(productId = null) {
