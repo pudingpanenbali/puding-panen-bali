@@ -90,6 +90,13 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4"></div>
 
+    <!-- Floating WhatsApp Contact Button (tampil di semua halaman) -->
+    <a id="whatsapp-float-btn" href="#" target="_blank" rel="noopener"
+       class="fixed bottom-5 right-5 z-[90] w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20BD5A] text-white shadow-xl flex items-center justify-center transition-transform hover:scale-105"
+       title="Hubungi kami via WhatsApp">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+    </a>
+
     <!-- Top Bar Notice -->
     <div class="bg-brand-900 text-brand-100 text-xs py-2 px-4 text-center tracking-wide font-medium flex justify-center items-center gap-2">
         <span id="topbar-text">🍮 Senantiasa Menyajikan Cita Rasa Puding Tradisional Sejak 1991</span>
@@ -182,15 +189,23 @@
                             <p class="text-base sm:text-lg text-brand-800/90 leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal" id="home-hero-subtitle">
                                 Manis, segar, dan dibuat dengan cita rasa legendaris yang telah menemani momen spesial banyak keluarga dan generasi di Bali.
                             </p>
-                            <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-                                <button onclick="navigateTo('catalog')" class="w-full sm:w-auto px-8 py-4 bg-brand-800 hover:bg-brand-700 text-cream font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3 text-base">
+                            <div class="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 pt-2">
+                                <button onclick="navigateTo('catalog')" class="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-brand-800 hover:bg-brand-700 text-cream font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-3 text-sm sm:text-base">
                                     <span>Lihat Produk</span>
                                     <i class="fa-solid fa-arrow-right text-sm"></i>
                                 </button>
-                                <button onclick="navigateTo('catalog'); filterCategory('Hampers');" class="w-full sm:w-auto px-8 py-4 bg-white border border-brand-300 text-brand-900 hover:bg-brand-50 font-semibold rounded-2xl shadow-sm transition flex items-center justify-center gap-2 text-base">
+                                <button onclick="navigateTo('catalog'); filterCategory('Hampers');" class="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-white border border-brand-300 text-brand-900 hover:bg-brand-50 font-semibold rounded-2xl shadow-sm transition flex items-center justify-center gap-2 text-sm sm:text-base">
                                     <i class="fa-solid fa-gift text-brand-500"></i>
                                     <span>Pesan Hampers</span>
                                 </button>
+                                <button onclick="navigateTo('stores')" class="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-sage-50 border border-sage-500 text-sage-700 hover:bg-sage-100 font-semibold rounded-2xl shadow-sm transition flex items-center justify-center gap-2 text-sm sm:text-base">
+                                    <i class="fa-solid fa-location-dot text-sage-700"></i>
+                                    <span>Lokasi Store Kami</span>
+                                </button>
+                                <a id="whatsapp-hero-btn" href="#" target="_blank" rel="noopener" class="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold rounded-2xl shadow-sm transition flex items-center justify-center gap-2 text-sm sm:text-base">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                    <span>Hubungi via WhatsApp</span>
+                                </a>
                             </div>
                             
                             <!-- Trust Badges -->
@@ -324,6 +339,12 @@
                 <span class="text-brand-500 font-semibold text-xs tracking-widest uppercase" id="stores-eyebrow">Lokasi Outlet</span>
                 <h1 class="font-serif text-3xl sm:text-4xl font-bold text-brand-900 mt-1" id="stores-title">Our Stores & Pickup Points</h1>
                 <p class="text-xs sm:text-sm text-brand-800/80 mt-2" id="stores-subtitle">Kunjungi store kami untuk menikmati sajian puding segar atau pilih sebagai titik lokasi pickup pesanan Anda.</p>
+                <div class="flex flex-wrap items-center justify-center gap-2 mt-4 text-xs text-brand-700">
+                    <span class="font-semibold">Juga tersedia di:</span>
+                    <span class="px-2.5 py-1 bg-brand-50 border border-brand-200 rounded-lg font-semibold">GoFood</span>
+                    <span class="px-2.5 py-1 bg-brand-50 border border-brand-200 rounded-lg font-semibold">GrabFood</span>
+                    <span class="px-2.5 py-1 bg-brand-50 border border-brand-200 rounded-lg font-semibold">ShopeeFood</span>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="stores-list-container">
@@ -644,6 +665,20 @@
                 </div>
             </div>
 
+            <!-- Unsaved Changes Bar -->
+            <div id="admin-unsaved-bar" class="hidden items-center justify-between gap-3 bg-amber-50 border border-amber-300 text-amber-900 px-5 py-3.5 rounded-2xl text-xs sm:text-sm flex-wrap">
+                <span class="flex items-center gap-2 font-semibold">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span id="admin-unsaved-count">0 perubahan belum disimpan</span>
+                </span>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="discardAllChanges()" class="px-3.5 py-2 bg-white hover:bg-amber-100 border border-amber-300 text-amber-800 text-xs font-bold rounded-xl">Batalkan</button>
+                    <button type="button" id="admin-save-all-btn" onclick="saveAllChanges()" class="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white text-xs font-bold rounded-xl flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Simpan Semua Perubahan
+                    </button>
+                </div>
+            </div>
+
             <!-- Admin Navigation Tabs -->
             <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-brand-200">
                 <button onclick="switchAdminTab('orders')" id="admin-tab-orders" class="admin-tab-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap bg-brand-800 text-white">
@@ -753,7 +788,7 @@
                 <div class="bg-white p-6 rounded-3xl border border-brand-100 shadow-sm space-y-6">
                     <div class="border-b border-brand-100 pb-4">
                         <h2 class="font-serif font-bold text-xl text-brand-900">Edit Tulisan & Banner Media Website</h2>
-                        <p class="text-xs text-brand-700">Ubah semua teks, logo, dan gambar di setiap bagian website. Klik "Simpan Semua Perubahan" di bagian paling bawah setelah selesai.</p>
+                        <p class="text-xs text-brand-700">Ubah semua teks, logo, dan gambar di setiap bagian website. Klik "Terapkan Perubahan Konten" di bagian paling bawah, lalu jangan lupa klik tombol hijau <strong>"Simpan Semua Perubahan"</strong> di bagian atas dashboard supaya benar-benar tersimpan ke website.</p>
                     </div>
 
                     <form onsubmit="handleSaveSiteContent(event)" class="space-y-8 text-xs sm:text-sm">
@@ -979,13 +1014,14 @@
                             <div>
                                 <label class="block font-bold text-brand-900 mb-1">Format internasional tanpa "+" (misal 62819XXXXXXXX)</label>
                                 <input type="text" id="cms-admin-whatsapp" placeholder="62819XXXXXXXX" class="w-full px-4 py-2.5 bg-brand-50 border border-brand-200 rounded-xl">
-                                <p class="text-[10px] text-brand-500 mt-1">Semua pesanan customer dari tombol "Kirim Pesanan" akan diarahkan ke nomor WhatsApp ini.</p>
+                                <p class="text-[10px] text-brand-500 mt-1">Nomor ini dipakai untuk: (1) tombol "Kirim Pesanan" saat checkout, dan (2) tombol floating WhatsApp hijau di pojok kanan bawah setiap halaman untuk kontak langsung.</p>
                             </div>
                         </div>
 
                         <button type="submit" class="px-6 py-3 bg-brand-800 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md text-xs">
-                            <i class="fa-solid fa-floppy-disk mr-2"></i>Simpan Semua Perubahan
+                            <i class="fa-solid fa-floppy-disk mr-2"></i>Terapkan Perubahan Konten
                         </button>
+                        <p class="text-[10px] text-brand-500">Ini baru menerapkan perubahan di draft. Klik tombol hijau "Simpan Semua Perubahan" di bagian atas dashboard untuk benar-benar mengunggah ke website.</p>
                     </form>
                 </div>
             </div>
@@ -1404,6 +1440,131 @@
         let currentAdminSession = null;
         let featuresDraft = []; // working copy for CMS features repeater
 
+        // ---------------- Admin "Simpan Semua Perubahan" draft/queue system ----------------
+        // Admin actions (tambah/edit/hapus/reorder) only update local appData + queue a
+        // pending Supabase operation. Nothing is actually written to the database until
+        // saveAllChanges() runs (triggered by the global "Simpan Semua Perubahan" button).
+        let pendingInserts = {}; // key: `${table}:${tempId}` -> { table, tempId, payload }
+        let pendingUpdates = {}; // key: `${table}:${id}`     -> { table, id, payload }
+        let pendingDeletes = {}; // key: `${table}:${id}`     -> { table, id }
+        let pendingSiteContent = null; // full site_content payload, or null if untouched
+
+        function makeTempId() { return 'temp-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); }
+        function isTempId(id) { return typeof id === 'string' && id.indexOf('temp-') === 0; }
+
+        function queueInsert(table, tempId, payload) {
+            pendingInserts[`${table}:${tempId}`] = { table, tempId, payload };
+            updateUnsavedIndicator();
+        }
+        function queueUpdate(table, id, payload) {
+            const key = `${table}:${id}`;
+            if (isTempId(id)) {
+                // Item was never saved yet — merge straight into its pending insert payload.
+                if (pendingInserts[key]) Object.assign(pendingInserts[key].payload, payload);
+                updateUnsavedIndicator();
+                return;
+            }
+            const existing = pendingUpdates[key];
+            pendingUpdates[key] = { table, id, payload: Object.assign({}, existing ? existing.payload : {}, payload) };
+            updateUnsavedIndicator();
+        }
+        function queueDelete(table, id) {
+            const key = `${table}:${id}`;
+            if (isTempId(id)) {
+                delete pendingInserts[key]; // was never saved — just drop the draft insert
+            } else {
+                delete pendingUpdates[key]; // no point updating something about to be deleted
+                pendingDeletes[key] = { table, id };
+            }
+            updateUnsavedIndicator();
+        }
+        function countPendingChanges() {
+            return Object.keys(pendingInserts).length + Object.keys(pendingUpdates).length + Object.keys(pendingDeletes).length + (pendingSiteContent ? 1 : 0);
+        }
+        function updateUnsavedIndicator() {
+            const bar = document.getElementById('admin-unsaved-bar');
+            if (!bar) return;
+            const n = countPendingChanges();
+            const countEl = document.getElementById('admin-unsaved-count');
+            if (n > 0) {
+                bar.classList.remove('hidden');
+                bar.classList.add('flex');
+                if (countEl) countEl.innerText = `${n} perubahan belum disimpan`;
+            } else {
+                bar.classList.add('hidden');
+                bar.classList.remove('flex');
+            }
+        }
+
+        function reRenderAllAdminAndPublicViews() {
+            applySiteContentToUI();
+            renderCategoryGridHome();
+            renderBestsellersHome();
+            renderCatalog();
+            renderStoresList();
+            renderFaqs();
+            renderAdminProducts();
+            renderAdminAddons();
+            renderAdminStores();
+            renderAdminFaqs();
+            renderAdminCategories();
+            populateCategorySelect();
+        }
+
+        async function saveAllChanges() {
+            const total = countPendingChanges();
+            if (total === 0) { showToast("Tidak ada perubahan untuk disimpan."); return; }
+
+            const btn = document.getElementById('admin-save-all-btn');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...'; }
+
+            const errors = [];
+            let successCount = 0;
+
+            for (const { table, id } of Object.values(pendingDeletes)) {
+                const { error } = await sb.from(table).delete().eq('id', id);
+                if (error) errors.push(`Hapus (${table}): ${error.message}`); else successCount++;
+            }
+            for (const { table, payload } of Object.values(pendingInserts)) {
+                const { error } = await sb.from(table).insert(payload);
+                if (error) errors.push(`Tambah (${table}): ${error.message}`); else successCount++;
+            }
+            for (const { table, id, payload } of Object.values(pendingUpdates)) {
+                const { error } = await sb.from(table).update(payload).eq('id', id);
+                if (error) errors.push(`Ubah (${table}): ${error.message}`); else successCount++;
+            }
+            if (pendingSiteContent) {
+                const { error } = await sb.from('site_content').upsert(pendingSiteContent);
+                if (error) errors.push(`Konten website: ${error.message}`); else successCount++;
+            }
+
+            pendingInserts = {}; pendingUpdates = {}; pendingDeletes = {}; pendingSiteContent = null;
+
+            await loadAppData();
+            reRenderAllAdminAndPublicViews();
+            updateUnsavedIndicator();
+
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Simpan Semua Perubahan'; }
+
+            if (errors.length === 0) {
+                showToast(`${successCount} perubahan berhasil disimpan ke website!`);
+            } else {
+                console.error("saveAllChanges errors:", errors);
+                showToast(`${successCount} tersimpan, ${errors.length} gagal (cek console untuk detail).`, "error");
+            }
+        }
+
+        async function discardAllChanges() {
+            if (countPendingChanges() === 0) return;
+            if (!confirm("Batalkan semua perubahan yang belum disimpan? Perubahan ini akan hilang dan data akan dimuat ulang dari server.")) return;
+            pendingInserts = {}; pendingUpdates = {}; pendingDeletes = {}; pendingSiteContent = null;
+            await loadAppData();
+            reRenderAllAdminAndPublicViews();
+            populateCmsFields();
+            updateUnsavedIndicator();
+            showToast("Semua perubahan yang belum disimpan sudah dibatalkan.");
+        }
+
         // ---------------- Mappers: DB row (snake_case) -> app shape (camelCase) ----------------
         function mapProduct(row) {
             return {
@@ -1709,8 +1870,16 @@
             const ig = document.getElementById('footer-social-instagram'); if (ig) ig.href = c.socialInstagram;
             const fb = document.getElementById('footer-social-facebook'); if (fb) fb.href = c.socialFacebook;
             const wa = document.getElementById('footer-social-whatsapp'); if (wa) wa.href = c.socialWhatsapp;
+
+            const waNum = sanitizePhoneForWa(c.adminWhatsappNumber);
+            const waGreetingUrl = waNum ? `https://wa.me/${waNum}?text=${encodeURIComponent('Halo Puding Panen Bali, saya mau bertanya tentang produk/pemesanan.')}` : '#';
+            const waFloat = document.getElementById('whatsapp-float-btn');
+            if (waFloat) waFloat.href = waGreetingUrl;
+            const waHero = document.getElementById('whatsapp-hero-btn');
+            if (waHero) waHero.href = waGreetingUrl;
         }
 
+        function sanitizePhoneForWa(phone) { return (phone || '').replace(/[^\d]/g, ''); }
         function setText(id, val) { const el = document.getElementById(id); if (el && val !== undefined && val !== null) el.innerText = val; }
         function setHtml(id, val) { const el = document.getElementById(id); if (el) el.innerHTML = val; }
 
@@ -2270,32 +2439,48 @@
                 return;
             }
 
-            let waText = `*PESANAN BARU - PUDING PANEN BALI*\n`;
-            waText += `*Order ID:* ${newOrder.id}\n`;
-            waText += `*Nama Pemesan:* ${custName}\n`;
-            waText += `*No. WhatsApp:* ${custPhone}\n\n`;
-            waText += `*METODE:* ${method === 'pickup' ? '🏪 AMBIL DI STORE' : '🛵 DELIVERY / PENGIRIMAN'}\n`;
+            const waLines = [];
+            waLines.push(`*PESANAN BARU - PUDING PANEN BALI*`);
+            waLines.push(`------------------------------`);
+            waLines.push(`*Order ID:* ${newOrder.id}`);
+            waLines.push(`*Nama Pemesan:* ${custName}`);
+            waLines.push(`*No. WhatsApp:* ${custPhone}`);
+            waLines.push(``);
+            waLines.push(`*METODE:* ${method === 'pickup' ? '🏪 AMBIL DI STORE' : '🛵 DELIVERY / PENGIRIMAN'}`);
 
             if (method === 'pickup') {
-                waText += `*Outlet:* ${deliveryDetails.store}\n`;
-                waText += `*Tgl & Jam:* ${deliveryDetails.date} @ ${deliveryDetails.time}\n`;
+                waLines.push(`*Outlet:* ${deliveryDetails.store}`);
+                waLines.push(`*Tgl & Jam:* ${deliveryDetails.date} @ ${deliveryDetails.time}`);
             } else {
-                waText += `*Penerima:* ${deliveryDetails.receiverName} (${deliveryDetails.receiverPhone})\n`;
-                waText += `*Alamat:* ${deliveryDetails.address}, ${deliveryDetails.building ? deliveryDetails.building + ',' : ''} ${deliveryDetails.area}, ${deliveryDetails.city}\n`;
-                waText += `*Google Maps Ref:* ${deliveryDetails.gmaps}\n`;
-                waText += `*Opsi Driver:* ${deliveryDetails.driverOption}\n`;
+                waLines.push(`*Penerima:* ${deliveryDetails.receiverName} (${deliveryDetails.receiverPhone})`);
+                const addressParts = [deliveryDetails.address, deliveryDetails.building, deliveryDetails.area, deliveryDetails.city].filter(part => (part || '').trim() !== '');
+                waLines.push(`*Alamat:* ${addressParts.join(', ')}`);
+                if ((deliveryDetails.gmaps || '').trim() !== '') waLines.push(`*Google Maps Ref:* ${deliveryDetails.gmaps}`);
+                waLines.push(`*Opsi Driver:* ${deliveryDetails.driverOption}`);
             }
 
-            waText += `\n*RINGKASAN ITEM:*\n`;
-            itemsSummary.forEach(it => {
-                waText += `• ${it.name} (${it.size}) x${it.qty} = Rp ${it.lineTotal.toLocaleString('id-ID')}\n`;
-                if (it.addOns.length > 0) waText += `   + Addons: ${it.addOns.join(', ')}\n`;
+            waLines.push(``);
+            waLines.push(`------------------------------`);
+            waLines.push(`*RINGKASAN ITEM:*`);
+            itemsSummary.forEach((it, idx) => {
+                waLines.push(``);
+                waLines.push(`${idx + 1}. ${it.name} (${it.size}) x${it.qty}`);
+                waLines.push(`   Rp ${it.lineTotal.toLocaleString('id-ID')}`);
+                if (it.addOns.length > 0) waLines.push(`   + Addons: ${it.addOns.join(', ')}`);
             });
 
-            waText += `\n*TOTAL ESTIMASI:* Rp ${subtotal.toLocaleString('id-ID')}\n`;
-            if (notes) waText += `*Catatan Khusus:* ${notes}\n`;
+            waLines.push(``);
+            waLines.push(`------------------------------`);
+            waLines.push(`*TOTAL ESTIMASI:* Rp ${subtotal.toLocaleString('id-ID')}`);
+            if (notes) {
+                waLines.push(``);
+                waLines.push(`*Catatan Khusus:*`);
+                waLines.push(notes);
+            }
 
-            const adminPhone = appData.siteContent.adminWhatsappNumber || "62";
+            const waText = waLines.join('\n');
+
+            const adminPhone = sanitizePhoneForWa(appData.siteContent.adminWhatsappNumber) || "62";
             const waUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(waText)}`;
 
             document.getElementById('success-order-id').innerText = newOrder.id;
@@ -2542,7 +2727,7 @@
             }).join('');
         }
 
-        async function moveProduct(id, dir) {
+        function moveProduct(id, dir) {
             const p = appData.products.find(x => x.id === id);
             if (!p) return;
             const siblings = appData.products.filter(x => x.category === p.category).sort((a, b) => a.sortOrder - b.sortOrder);
@@ -2551,28 +2736,23 @@
             if (targetIdx < 0 || targetIdx >= siblings.length) return;
             const other = siblings[targetIdx];
             const aOrder = p.sortOrder, bOrder = other.sortOrder;
-            const [{ error: err1 }, { error: err2 }] = await Promise.all([
-                sb.from('products').update({ sort_order: bOrder }).eq('id', p.id),
-                sb.from('products').update({ sort_order: aOrder }).eq('id', other.id)
-            ]);
-            if (err1 || err2) { showToast("Gagal mengubah urutan produk.", "error"); return; }
             p.sortOrder = bOrder;
             other.sortOrder = aOrder;
+            queueUpdate('products', p.id, { sort_order: p.sortOrder });
+            queueUpdate('products', other.id, { sort_order: other.sortOrder });
             renderAdminProducts();
             renderCatalog();
         }
 
-        async function toggleBestSeller(id) {
+        function toggleBestSeller(id) {
             const p = appData.products.find(x => x.id === id);
             if (!p) return;
-            const newVal = !p.isBestSeller;
-            const { error } = await sb.from('products').update({ is_bestseller: newVal }).eq('id', id);
-            if (error) { showToast("Gagal mengubah status Best Seller.", "error"); return; }
-            p.isBestSeller = newVal;
+            p.isBestSeller = !p.isBestSeller;
+            queueUpdate('products', id, { is_bestseller: p.isBestSeller });
             renderAdminProducts();
             renderCatalog();
             renderBestsellersHome();
-            showToast(newVal ? `${p.name} ditandai sebagai Best Seller!` : `${p.name} dihapus dari Best Seller.`);
+            showToast(p.isBestSeller ? `${p.name} ditandai sebagai Best Seller (belum disimpan).` : `${p.name} dihapus dari Best Seller (belum disimpan).`);
         }
 
         function openProductEditorModal(productId = null) {
@@ -2618,7 +2798,7 @@
             }
         }
 
-        async function handleSaveProduct(e) {
+        function handleSaveProduct(e) {
             e.preventDefault();
             const id = document.getElementById('edit-prod-id').value;
             const name = document.getElementById('edit-prod-name').value.trim();
@@ -2635,39 +2815,46 @@
                 shelf_life: shelfLife, in_stock: inStock, is_bestseller: isBestSeller
             };
 
-            let error;
             if (id) {
-                ({ error } = await sb.from('products').update(payload).eq('id', id));
+                const p = appData.products.find(x => x.id === id);
+                if (p) {
+                    p.name = name; p.category = category; p.price = price;
+                    p.image = image || FALLBACK_IMG; p.description = description;
+                    p.shelfLife = shelfLife; p.inStock = inStock; p.isBestSeller = isBestSeller;
+                }
+                queueUpdate('products', id, payload);
             } else {
                 payload.sizes = [{ name: "Standard", price: price }];
                 payload.best_for = ["Konsumsi Pribadi", "Keluarga"];
                 const maxOrder = appData.products.filter(p => p.category === category).reduce((m, p) => Math.max(m, p.sortOrder || 0), 0);
                 payload.sort_order = maxOrder + 1;
-                ({ error } = await sb.from('products').insert(payload));
+                const tempId = makeTempId();
+                appData.products.push({
+                    id: tempId, name, category, price, image: image || FALLBACK_IMG, description,
+                    shelfLife, storage: '', bestFor: payload.best_for, sizes: payload.sizes,
+                    isBestSeller, inStock, sortOrder: payload.sort_order
+                });
+                queueInsert('products', tempId, payload);
             }
 
-            if (error) { showToast("Gagal menyimpan produk: " + error.message, "error"); return; }
-
-            await loadAppData();
             closeAdminProductModal();
             renderCatalog();
             renderAdminProducts();
             renderBestsellersHome();
             populateCategorySelect();
-            showToast("Produk berhasil disimpan!");
+            showToast(id ? "Perubahan produk disimpan sementara (belum diunggah)." : "Produk baru ditambahkan sementara (belum diunggah).");
         }
 
         function editProduct(id) { openProductEditorModal(id); }
 
-        async function deleteProduct(id) {
+        function deleteProduct(id) {
             if (!confirm("Hapus produk ini?")) return;
-            const { error } = await sb.from('products').delete().eq('id', id);
-            if (error) { showToast("Gagal menghapus produk.", "error"); return; }
             appData.products = appData.products.filter(p => p.id !== id);
+            queueDelete('products', id);
             renderCatalog();
             renderAdminProducts();
             renderBestsellersHome();
-            showToast("Produk berhasil dihapus!");
+            showToast("Produk dihapus dari daftar (belum diunggah).");
         }
 
         // Admin 3: Categories
@@ -2684,13 +2871,13 @@
                     <div class="flex items-center gap-1.5 flex-shrink-0">
                         <button onclick="moveCategory('${c.id}',-1)" ${i === 0 ? 'disabled' : ''} title="Naikkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-up"></i></button>
                         <button onclick="moveCategory('${c.id}',1)" ${i === cats.length - 1 ? 'disabled' : ''} title="Turunkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-down"></i></button>
-                        <button onclick="deleteCategory('${c.name}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-md font-bold">Hapus</button>
+                        <button onclick="deleteCategory('${c.id}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-md font-bold">Hapus</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        async function moveCategory(id, dir) {
+        function moveCategory(id, dir) {
             const cats = (appData.categoryList || []).slice().sort((a, b) => a.sortOrder - b.sortOrder);
             const idx = cats.findIndex(x => x.id === id);
             if (idx === -1) return;
@@ -2698,43 +2885,47 @@
             if (targetIdx < 0 || targetIdx >= cats.length) return;
             const a = cats[idx], b = cats[targetIdx];
             const aOrder = a.sortOrder, bOrder = b.sortOrder;
-            const [{ error: err1 }, { error: err2 }] = await Promise.all([
-                sb.from('categories').update({ sort_order: bOrder }).eq('id', a.id),
-                sb.from('categories').update({ sort_order: aOrder }).eq('id', b.id)
-            ]);
-            if (err1 || err2) { showToast("Gagal mengubah urutan kategori.", "error"); return; }
             a.sortOrder = bOrder;
             b.sortOrder = aOrder;
+            queueUpdate('categories', a.id, { sort_order: a.sortOrder });
+            queueUpdate('categories', b.id, { sort_order: b.sortOrder });
             renderAdminCategories();
             renderCategoryGridHome();
             renderCatalog();
         }
 
-        async function openCategoryEditorModal() {
+        function openCategoryEditorModal() {
             const name = prompt("Nama Kategori Baru (misal: Cup Kecil, Box, Minuman):");
             if (!name) return;
             const icon = prompt("Emoji Icon (misal 🥤 / 📦 / 🧃):", "🍨") || "🍨";
+            const trimmedName = name.trim();
             const maxOrder = (appData.categoryList || []).reduce((m, c) => Math.max(m, c.sortOrder || 0), 0);
-            const { error } = await sb.from('categories').insert({ name: name.trim(), icon, sort_order: maxOrder + 1 });
-            if (error) { showToast("Gagal menambah kategori: " + error.message, "error"); return; }
-            await loadAppData();
+            const tempId = makeTempId();
+            appData.categoryList = appData.categoryList || [];
+            appData.categoryList.push({ id: tempId, name: trimmedName, icon, sortOrder: maxOrder + 1 });
+            appData.categories = ["Semua", ...appData.categoryList.slice().sort((a, b) => a.sortOrder - b.sortOrder).map(c => c.name)];
+            appData.categoryIcons[trimmedName] = icon;
+            queueInsert('categories', tempId, { name: trimmedName, icon, sort_order: maxOrder + 1 });
             renderAdminCategories();
             populateCategorySelect();
             renderCategoryGridHome();
             renderCatalog();
-            showToast("Kategori baru ditambahkan!");
+            showToast("Kategori baru ditambahkan sementara (belum diunggah).");
         }
 
-        async function deleteCategory(name) {
-            if (!confirm(`Hapus kategori "${name}"? Produk dengan kategori ini TIDAK akan otomatis terhapus.`)) return;
-            const { error } = await sb.from('categories').delete().eq('name', name);
-            if (error) { showToast("Gagal menghapus kategori.", "error"); return; }
-            await loadAppData();
+        function deleteCategory(id) {
+            const cat = (appData.categoryList || []).find(c => c.id === id);
+            if (!cat) return;
+            if (!confirm(`Hapus kategori "${cat.name}"? Produk dengan kategori ini TIDAK akan otomatis terhapus.`)) return;
+            appData.categoryList = appData.categoryList.filter(c => c.id !== id);
+            appData.categories = ["Semua", ...appData.categoryList.slice().sort((a, b) => a.sortOrder - b.sortOrder).map(c => c.name)];
+            delete appData.categoryIcons[cat.name];
+            queueDelete('categories', id);
             renderAdminCategories();
             populateCategorySelect();
             renderCategoryGridHome();
             renderCatalog();
-            showToast("Kategori dihapus!");
+            showToast("Kategori dihapus dari daftar (belum diunggah).");
         }
 
         // Admin 4: Addons
@@ -2758,7 +2949,7 @@
             `).join('');
         }
 
-        async function moveAddon(id, dir) {
+        function moveAddon(id, dir) {
             const list = appData.addOns.slice().sort((a, b) => a.sortOrder - b.sortOrder);
             const idx = list.findIndex(x => x.id === id);
             if (idx === -1) return;
@@ -2766,17 +2957,14 @@
             if (targetIdx < 0 || targetIdx >= list.length) return;
             const a = list[idx], b = list[targetIdx];
             const aOrder = a.sortOrder, bOrder = b.sortOrder;
-            const [{ error: err1 }, { error: err2 }] = await Promise.all([
-                sb.from('addons').update({ sort_order: bOrder }).eq('id', a.id),
-                sb.from('addons').update({ sort_order: aOrder }).eq('id', b.id)
-            ]);
-            if (err1 || err2) { showToast("Gagal mengubah urutan add-on.", "error"); return; }
             a.sortOrder = bOrder;
             b.sortOrder = aOrder;
+            queueUpdate('addons', a.id, { sort_order: a.sortOrder });
+            queueUpdate('addons', b.id, { sort_order: b.sortOrder });
             renderAdminAddons();
         }
 
-        async function openAddonEditorModal() {
+        function openAddonEditorModal() {
             const name = prompt("Nama Tambahan/Add-on:");
             const price = parseInt(prompt("Harga (Rp):"));
             const desc = prompt("Deskripsi singkat:");
@@ -2784,20 +2972,19 @@
 
             if (name && !isNaN(price)) {
                 const maxOrder = appData.addOns.reduce((m, a) => Math.max(m, a.sortOrder || 0), 0);
-                const { error } = await sb.from('addons').insert({ name, price, description: desc, icon, sort_order: maxOrder + 1 });
-                if (error) { showToast("Gagal menambah add-on.", "error"); return; }
-                await loadAppData();
+                const tempId = makeTempId();
+                appData.addOns.push({ id: tempId, name, price, desc: desc || '', icon: icon || '🎁', sortOrder: maxOrder + 1 });
+                queueInsert('addons', tempId, { name, price, description: desc, icon, sort_order: maxOrder + 1 });
                 renderAdminAddons();
-                showToast("Add-on berhasil ditambahkan!");
+                showToast("Add-on baru ditambahkan sementara (belum diunggah).");
             }
         }
 
-        async function deleteAddon(id) {
-            const { error } = await sb.from('addons').delete().eq('id', id);
-            if (error) { showToast("Gagal menghapus add-on.", "error"); return; }
+        function deleteAddon(id) {
             appData.addOns = appData.addOns.filter(a => a.id !== id);
+            queueDelete('addons', id);
             renderAdminAddons();
-            showToast("Add-on dihapus!");
+            showToast("Add-on dihapus dari daftar (belum diunggah).");
         }
 
         // Admin 5: Stores
@@ -2818,7 +3005,7 @@
             `).join('');
         }
 
-        async function moveStore(id, dir) {
+        function moveStore(id, dir) {
             const list = appData.stores.slice().sort((a, b) => a.sortOrder - b.sortOrder);
             const idx = list.findIndex(x => x.id === id);
             if (idx === -1) return;
@@ -2826,18 +3013,15 @@
             if (targetIdx < 0 || targetIdx >= list.length) return;
             const a = list[idx], b = list[targetIdx];
             const aOrder = a.sortOrder, bOrder = b.sortOrder;
-            const [{ error: err1 }, { error: err2 }] = await Promise.all([
-                sb.from('stores').update({ sort_order: bOrder }).eq('id', a.id),
-                sb.from('stores').update({ sort_order: aOrder }).eq('id', b.id)
-            ]);
-            if (err1 || err2) { showToast("Gagal mengubah urutan store.", "error"); return; }
             a.sortOrder = bOrder;
             b.sortOrder = aOrder;
+            queueUpdate('stores', a.id, { sort_order: a.sortOrder });
+            queueUpdate('stores', b.id, { sort_order: b.sortOrder });
             renderAdminStores();
             renderStoresList();
         }
 
-        async function openStoreEditorModal() {
+        function openStoreEditorModal() {
             const name = prompt("Nama Store:");
             const address = prompt("Alamat Lengkap:");
             const hours = prompt("Jam Operasional (misal Senin - Sabtu, 08:00 - 20:00 WITA):");
@@ -2846,22 +3030,21 @@
 
             if (name && address) {
                 const maxOrder = appData.stores.reduce((m, s) => Math.max(m, s.sortOrder || 0), 0);
-                const { error } = await sb.from('stores').insert({ name, address, hours, phone, maps_link: mapsLink, sort_order: maxOrder + 1 });
-                if (error) { showToast("Gagal menambah store.", "error"); return; }
-                await loadAppData();
+                const tempId = makeTempId();
+                appData.stores.push({ id: tempId, name, address, hours: hours || '', phone: phone || '', mapsLink, sortOrder: maxOrder + 1 });
+                queueInsert('stores', tempId, { name, address, hours, phone, maps_link: mapsLink, sort_order: maxOrder + 1 });
                 renderStoresList();
                 renderAdminStores();
-                showToast("Store baru ditambahkan!");
+                showToast("Store baru ditambahkan sementara (belum diunggah).");
             }
         }
 
-        async function deleteStore(id) {
-            const { error } = await sb.from('stores').delete().eq('id', id);
-            if (error) { showToast("Gagal menghapus store.", "error"); return; }
+        function deleteStore(id) {
             appData.stores = appData.stores.filter(s => s.id !== id);
+            queueDelete('stores', id);
             renderStoresList();
             renderAdminStores();
-            showToast("Store dihapus!");
+            showToast("Store dihapus dari daftar (belum diunggah).");
         }
 
         // Admin 6: CMS Site Content Editor
@@ -2978,7 +3161,7 @@
             }
         }
 
-        async function handleSaveSiteContent(e) {
+        function handleSaveSiteContent(e) {
             e.preventDefault();
             const val = (id) => document.getElementById(id).value.trim();
 
@@ -3032,12 +3215,11 @@
                 admin_whatsapp_number: val('cms-admin-whatsapp')
             };
 
-            const { error } = await sb.from('site_content').upsert(payload);
-            if (error) { showToast("Gagal menyimpan konten: " + error.message, "error"); return; }
-
-            await loadAppData();
+            pendingSiteContent = payload;
+            appData.siteContent = mapSiteContent(payload);
             applySiteContentToUI();
-            showToast("Konten website berhasil diperbarui!");
+            updateUnsavedIndicator();
+            showToast("Perubahan konten diterapkan ke draft (belum diunggah).");
         }
 
         // Admin 7: FAQs
@@ -3057,7 +3239,7 @@
             `).join('');
         }
 
-        async function moveFaq(id, dir) {
+        function moveFaq(id, dir) {
             const list = appData.faqs.slice().sort((a, b) => a.sortOrder - b.sortOrder);
             const idx = list.findIndex(x => x.id === id);
             if (idx === -1) return;
@@ -3065,38 +3247,34 @@
             if (targetIdx < 0 || targetIdx >= list.length) return;
             const a = list[idx], b = list[targetIdx];
             const aOrder = a.sortOrder, bOrder = b.sortOrder;
-            const [{ error: err1 }, { error: err2 }] = await Promise.all([
-                sb.from('faqs').update({ sort_order: bOrder }).eq('id', a.id),
-                sb.from('faqs').update({ sort_order: aOrder }).eq('id', b.id)
-            ]);
-            if (err1 || err2) { showToast("Gagal mengubah urutan FAQ.", "error"); return; }
             a.sortOrder = bOrder;
             b.sortOrder = aOrder;
+            queueUpdate('faqs', a.id, { sort_order: a.sortOrder });
+            queueUpdate('faqs', b.id, { sort_order: b.sortOrder });
             renderAdminFaqs();
             renderFaqs();
         }
 
-        async function openFaqModal() {
+        function openFaqModal() {
             const q = prompt("Pertanyaan FAQ:");
             const a = prompt("Jawaban FAQ:");
             if (q && a) {
                 const maxOrder = appData.faqs.reduce((m, f) => Math.max(m, f.sortOrder || 0), 0);
-                const { error } = await sb.from('faqs').insert({ q, a, sort_order: maxOrder + 1 });
-                if (error) { showToast("Gagal menambah FAQ.", "error"); return; }
-                await loadAppData();
+                const tempId = makeTempId();
+                appData.faqs.push({ id: tempId, q, a, sortOrder: maxOrder + 1 });
+                queueInsert('faqs', tempId, { q, a, sort_order: maxOrder + 1 });
                 renderFaqs();
                 renderAdminFaqs();
-                showToast("FAQ berhasil ditambahkan!");
+                showToast("FAQ baru ditambahkan sementara (belum diunggah).");
             }
         }
 
-        async function deleteFaq(id) {
-            const { error } = await sb.from('faqs').delete().eq('id', id);
-            if (error) { showToast("Gagal menghapus FAQ.", "error"); return; }
+        function deleteFaq(id) {
             appData.faqs = appData.faqs.filter(f => f.id !== id);
+            queueDelete('faqs', id);
             renderFaqs();
             renderAdminFaqs();
-            showToast("FAQ dihapus!");
+            showToast("FAQ dihapus dari daftar (belum diunggah).");
         }
 
         // Export Data JSON Backup
