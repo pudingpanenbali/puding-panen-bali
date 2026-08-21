@@ -703,8 +703,8 @@
                     </button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="admin-products-list">
-                    <!-- Populated dynamically -->
+                <div class="space-y-2" id="admin-products-list">
+                    <!-- Populated dynamically, grouped by category -->
                 </div>
             </div>
 
@@ -1388,6 +1388,7 @@
             siteContent: {},
             categories: ["Semua"],
             categoryIcons: {},
+            categoryList: [],
             products: [],
             addOns: [],
             stores: [],
@@ -1501,6 +1502,7 @@
                 const cats = (catRes.data || []);
                 appData.categories = ["Semua", ...cats.map(c => c.name)];
                 appData.categoryIcons = {};
+                appData.categoryList = cats.map(c => ({ id: c.id, name: c.name, icon: c.icon || "🍨", sortOrder: c.sort_order || 0 }));
                 cats.forEach(c => appData.categoryIcons[c.name] = c.icon || "🍨");
                 appData.products = (prodRes.data || []).map(mapProduct);
                 appData.addOns = (addonRes.data || []).map(mapAddon);
@@ -2500,7 +2502,16 @@
 
         function renderAdminProducts() {
             const container = document.getElementById('admin-products-list');
-            container.innerHTML = appData.products.map(p => `
+            const presentCats = [...new Set(appData.products.map(p => p.category))];
+            const knownOrder = (appData.categoryList || []).map(c => c.name);
+            const orderedCats = [
+                ...knownOrder.filter(name => presentCats.includes(name)),
+                ...presentCats.filter(name => !knownOrder.includes(name))
+            ];
+
+            container.innerHTML = orderedCats.map(catName => {
+                const items = appData.products.filter(p => p.category === catName).sort((a, b) => a.sortOrder - b.sortOrder);
+                const cards = items.map((p, i) => `
                 <div class="bg-white p-4 rounded-2xl border ${p.isBestSeller ? 'border-amber-300' : 'border-brand-100'} shadow-sm flex gap-3 text-xs">
                     <img src="${p.image}" class="w-16 h-16 object-cover rounded-xl border flex-shrink-0">
                     <div class="flex-1 min-w-0">
@@ -2511,6 +2522,8 @@
                         <p class="font-bold text-brand-600 mt-0.5">Rp ${p.price.toLocaleString('id-ID')}</p>
                         <p class="text-[10px] text-brand-500">Stok: ${p.inStock ? 'Ready' : 'Habis'}</p>
                         <div class="flex items-center gap-2 mt-2 flex-wrap">
+                            <button onclick="moveProduct('${p.id}',-1)" ${i === 0 ? 'disabled' : ''} title="Naikkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button onclick="moveProduct('${p.id}',1)" ${i === items.length - 1 ? 'disabled' : ''} title="Turunkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-down"></i></button>
                             <button onclick="toggleBestSeller('${p.id}')" class="px-2.5 py-1 rounded-md font-bold flex items-center gap-1 transition ${p.isBestSeller ? 'bg-amber-100 hover:bg-amber-200 text-amber-800' : 'bg-brand-50 hover:bg-brand-100 text-brand-500 border border-brand-200'}">
                                 <i class="fa-solid fa-star"></i> ${p.isBestSeller ? 'Best Seller' : 'Jadikan Best Seller'}
                             </button>
@@ -2520,6 +2533,33 @@
                     </div>
                 </div>
             `).join('');
+                return `
+                <div class="mb-6">
+                    <h3 class="text-xs font-bold uppercase tracking-wide text-brand-500 mb-2 px-1">${catName}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${cards}</div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        async function moveProduct(id, dir) {
+            const p = appData.products.find(x => x.id === id);
+            if (!p) return;
+            const siblings = appData.products.filter(x => x.category === p.category).sort((a, b) => a.sortOrder - b.sortOrder);
+            const idx = siblings.findIndex(x => x.id === id);
+            const targetIdx = idx + dir;
+            if (targetIdx < 0 || targetIdx >= siblings.length) return;
+            const other = siblings[targetIdx];
+            const aOrder = p.sortOrder, bOrder = other.sortOrder;
+            const [{ error: err1 }, { error: err2 }] = await Promise.all([
+                sb.from('products').update({ sort_order: bOrder }).eq('id', p.id),
+                sb.from('products').update({ sort_order: aOrder }).eq('id', other.id)
+            ]);
+            if (err1 || err2) { showToast("Gagal mengubah urutan produk.", "error"); return; }
+            p.sortOrder = bOrder;
+            other.sortOrder = aOrder;
+            renderAdminProducts();
+            renderCatalog();
         }
 
         async function toggleBestSeller(id) {
@@ -2601,6 +2641,8 @@
             } else {
                 payload.sizes = [{ name: "Standard", price: price }];
                 payload.best_for = ["Konsumsi Pribadi", "Keluarga"];
+                const maxOrder = appData.products.filter(p => p.category === category).reduce((m, p) => Math.max(m, p.sortOrder || 0), 0);
+                payload.sort_order = maxOrder + 1;
                 ({ error } = await sb.from('products').insert(payload));
             }
 
@@ -2632,23 +2674,48 @@
         function renderAdminCategories() {
             const container = document.getElementById('admin-categories-list');
             if (!container) return;
-            const cats = appData.categories.filter(c => c !== "Semua");
-            container.innerHTML = cats.map(name => `
-                <div class="bg-white p-4 rounded-2xl border border-brand-100 text-xs flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xl">${appData.categoryIcons[name] || '🍨'}</span>
-                        <span class="font-bold text-brand-900">${name}</span>
+            const cats = (appData.categoryList || []).slice().sort((a, b) => a.sortOrder - b.sortOrder);
+            container.innerHTML = cats.map((c, i) => `
+                <div class="bg-white p-4 rounded-2xl border border-brand-100 text-xs flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="text-xl">${c.icon || '🍨'}</span>
+                        <span class="font-bold text-brand-900 truncate">${c.name}</span>
                     </div>
-                    <button onclick="deleteCategory('${name}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-md font-bold">Hapus</button>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <button onclick="moveCategory('${c.id}',-1)" ${i === 0 ? 'disabled' : ''} title="Naikkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveCategory('${c.id}',1)" ${i === cats.length - 1 ? 'disabled' : ''} title="Turunkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button onclick="deleteCategory('${c.name}')" class="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-md font-bold">Hapus</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        async function moveCategory(id, dir) {
+            const cats = (appData.categoryList || []).slice().sort((a, b) => a.sortOrder - b.sortOrder);
+            const idx = cats.findIndex(x => x.id === id);
+            if (idx === -1) return;
+            const targetIdx = idx + dir;
+            if (targetIdx < 0 || targetIdx >= cats.length) return;
+            const a = cats[idx], b = cats[targetIdx];
+            const aOrder = a.sortOrder, bOrder = b.sortOrder;
+            const [{ error: err1 }, { error: err2 }] = await Promise.all([
+                sb.from('categories').update({ sort_order: bOrder }).eq('id', a.id),
+                sb.from('categories').update({ sort_order: aOrder }).eq('id', b.id)
+            ]);
+            if (err1 || err2) { showToast("Gagal mengubah urutan kategori.", "error"); return; }
+            a.sortOrder = bOrder;
+            b.sortOrder = aOrder;
+            renderAdminCategories();
+            renderCategoryGridHome();
+            renderCatalog();
         }
 
         async function openCategoryEditorModal() {
             const name = prompt("Nama Kategori Baru (misal: Cup Kecil, Box, Minuman):");
             if (!name) return;
             const icon = prompt("Emoji Icon (misal 🥤 / 📦 / 🧃):", "🍨") || "🍨";
-            const { error } = await sb.from('categories').insert({ name: name.trim(), icon });
+            const maxOrder = (appData.categoryList || []).reduce((m, c) => Math.max(m, c.sortOrder || 0), 0);
+            const { error } = await sb.from('categories').insert({ name: name.trim(), icon, sort_order: maxOrder + 1 });
             if (error) { showToast("Gagal menambah kategori: " + error.message, "error"); return; }
             await loadAppData();
             renderAdminCategories();
@@ -2673,7 +2740,8 @@
         // Admin 4: Addons
         function renderAdminAddons() {
             const container = document.getElementById('admin-addons-list');
-            container.innerHTML = appData.addOns.map((a) => `
+            const list = appData.addOns.slice().sort((a, b) => a.sortOrder - b.sortOrder);
+            container.innerHTML = list.map((a, i) => `
                 <div class="bg-white p-4 rounded-2xl border border-brand-100 shadow-sm space-y-2 text-xs">
                     <div class="flex items-center justify-between">
                         <span class="text-2xl">${a.icon}</span>
@@ -2681,9 +2749,31 @@
                     </div>
                     <h4 class="font-bold text-brand-900">${a.name}</h4>
                     <p class="text-[10px] text-brand-700">${a.desc}</p>
-                    <button onclick="deleteAddon('${a.id}')" class="w-full py-1 bg-red-100 text-red-700 rounded-lg font-bold text-[10px]">Hapus</button>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="moveAddon('${a.id}',-1)" ${i === 0 ? 'disabled' : ''} title="Naikkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveAddon('${a.id}',1)" ${i === list.length - 1 ? 'disabled' : ''} title="Turunkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button onclick="deleteAddon('${a.id}')" class="flex-1 py-1 bg-red-100 text-red-700 rounded-lg font-bold text-[10px]">Hapus</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        async function moveAddon(id, dir) {
+            const list = appData.addOns.slice().sort((a, b) => a.sortOrder - b.sortOrder);
+            const idx = list.findIndex(x => x.id === id);
+            if (idx === -1) return;
+            const targetIdx = idx + dir;
+            if (targetIdx < 0 || targetIdx >= list.length) return;
+            const a = list[idx], b = list[targetIdx];
+            const aOrder = a.sortOrder, bOrder = b.sortOrder;
+            const [{ error: err1 }, { error: err2 }] = await Promise.all([
+                sb.from('addons').update({ sort_order: bOrder }).eq('id', a.id),
+                sb.from('addons').update({ sort_order: aOrder }).eq('id', b.id)
+            ]);
+            if (err1 || err2) { showToast("Gagal mengubah urutan add-on.", "error"); return; }
+            a.sortOrder = bOrder;
+            b.sortOrder = aOrder;
+            renderAdminAddons();
         }
 
         async function openAddonEditorModal() {
@@ -2693,7 +2783,8 @@
             const icon = prompt("Emoji Icon (misal 👜 / 💌):", "🎁");
 
             if (name && !isNaN(price)) {
-                const { error } = await sb.from('addons').insert({ name, price, description: desc, icon });
+                const maxOrder = appData.addOns.reduce((m, a) => Math.max(m, a.sortOrder || 0), 0);
+                const { error } = await sb.from('addons').insert({ name, price, description: desc, icon, sort_order: maxOrder + 1 });
                 if (error) { showToast("Gagal menambah add-on.", "error"); return; }
                 await loadAppData();
                 renderAdminAddons();
@@ -2712,14 +2803,38 @@
         // Admin 5: Stores
         function renderAdminStores() {
             const container = document.getElementById('admin-stores-list');
-            container.innerHTML = appData.stores.map((s) => `
+            const list = appData.stores.slice().sort((a, b) => a.sortOrder - b.sortOrder);
+            container.innerHTML = list.map((s, i) => `
                 <div class="bg-white p-4 rounded-2xl border border-brand-100 text-xs space-y-2">
                     <h4 class="font-bold text-brand-900">${s.name}</h4>
                     <p class="text-brand-700">${s.address}</p>
                     <p class="text-brand-600 font-bold">${s.hours}</p>
-                    <button onclick="deleteStore('${s.id}')" class="w-full py-1 bg-red-100 text-red-700 rounded-lg font-bold text-[10px]">Hapus Outlet</button>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="moveStore('${s.id}',-1)" ${i === 0 ? 'disabled' : ''} title="Naikkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveStore('${s.id}',1)" ${i === list.length - 1 ? 'disabled' : ''} title="Turunkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button onclick="deleteStore('${s.id}')" class="flex-1 py-1 bg-red-100 text-red-700 rounded-lg font-bold text-[10px]">Hapus Outlet</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        async function moveStore(id, dir) {
+            const list = appData.stores.slice().sort((a, b) => a.sortOrder - b.sortOrder);
+            const idx = list.findIndex(x => x.id === id);
+            if (idx === -1) return;
+            const targetIdx = idx + dir;
+            if (targetIdx < 0 || targetIdx >= list.length) return;
+            const a = list[idx], b = list[targetIdx];
+            const aOrder = a.sortOrder, bOrder = b.sortOrder;
+            const [{ error: err1 }, { error: err2 }] = await Promise.all([
+                sb.from('stores').update({ sort_order: bOrder }).eq('id', a.id),
+                sb.from('stores').update({ sort_order: aOrder }).eq('id', b.id)
+            ]);
+            if (err1 || err2) { showToast("Gagal mengubah urutan store.", "error"); return; }
+            a.sortOrder = bOrder;
+            b.sortOrder = aOrder;
+            renderAdminStores();
+            renderStoresList();
         }
 
         async function openStoreEditorModal() {
@@ -2730,7 +2845,8 @@
             const mapsLink = prompt("Link Google Maps:") || `https://maps.google.com/?q=${encodeURIComponent(name || '')}`;
 
             if (name && address) {
-                const { error } = await sb.from('stores').insert({ name, address, hours, phone, maps_link: mapsLink });
+                const maxOrder = appData.stores.reduce((m, s) => Math.max(m, s.sortOrder || 0), 0);
+                const { error } = await sb.from('stores').insert({ name, address, hours, phone, maps_link: mapsLink, sort_order: maxOrder + 1 });
                 if (error) { showToast("Gagal menambah store.", "error"); return; }
                 await loadAppData();
                 renderStoresList();
@@ -2818,13 +2934,25 @@
                         <input type="text" value="${(f.title||'').replace(/"/g,'&quot;')}" placeholder="Judul" oninput="updateFeatureDraft(${idx},'title',this.value)" class="px-2 py-1.5 bg-white border rounded-lg text-xs col-span-2">
                     </div>
                     <textarea rows="2" placeholder="Deskripsi" oninput="updateFeatureDraft(${idx},'desc',this.value)" class="w-full px-2 py-1.5 bg-white border rounded-lg text-xs">${f.desc||''}</textarea>
-                    <button type="button" onclick="removeFeatureDraft(${idx})" class="text-[10px] font-bold text-red-600">Hapus baris ini</button>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="moveFeatureDraft(${idx},-1)" ${idx === 0 ? 'disabled' : ''} title="Naikkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-white hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button type="button" onclick="moveFeatureDraft(${idx},1)" ${idx === featuresDraft.length - 1 ? 'disabled' : ''} title="Turunkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-white hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button type="button" onclick="removeFeatureDraft(${idx})" class="text-[10px] font-bold text-red-600">Hapus baris ini</button>
+                    </div>
                 </div>
             `).join('');
         }
         function updateFeatureDraft(idx, key, val) { featuresDraft[idx][key] = val; }
         function addFeatureDraft() { featuresDraft.push({icon:'fa-star', title:'', desc:''}); renderFeaturesDraftEditor(); }
         function removeFeatureDraft(idx) { featuresDraft.splice(idx,1); renderFeaturesDraftEditor(); }
+        function moveFeatureDraft(idx, dir) {
+            const targetIdx = idx + dir;
+            if (targetIdx < 0 || targetIdx >= featuresDraft.length) return;
+            const tmp = featuresDraft[idx];
+            featuresDraft[idx] = featuresDraft[targetIdx];
+            featuresDraft[targetIdx] = tmp;
+            renderFeaturesDraftEditor();
+        }
 
         function handleCmsImageUpload(e) {
             const file = e.target.files[0];
@@ -2915,20 +3043,45 @@
         // Admin 7: FAQs
         function renderAdminFaqs() {
             const container = document.getElementById('admin-faqs-list');
-            container.innerHTML = appData.faqs.map((f) => `
+            const list = appData.faqs.slice().sort((a, b) => a.sortOrder - b.sortOrder);
+            container.innerHTML = list.map((f, i) => `
                 <div class="bg-white p-4 rounded-2xl border border-brand-100 text-xs space-y-2">
                     <p class="font-bold text-brand-900">Q: ${f.q}</p>
                     <p class="text-brand-700">A: ${f.a}</p>
-                    <button onclick="deleteFaq('${f.id}')" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg font-bold text-[10px]">Hapus FAQ</button>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="moveFaq('${f.id}',-1)" ${i === 0 ? 'disabled' : ''} title="Naikkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveFaq('${f.id}',1)" ${i === list.length - 1 ? 'disabled' : ''} title="Turunkan urutan" class="w-7 h-7 flex items-center justify-center rounded-md font-bold bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button onclick="deleteFaq('${f.id}')" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg font-bold text-[10px]">Hapus FAQ</button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        async function moveFaq(id, dir) {
+            const list = appData.faqs.slice().sort((a, b) => a.sortOrder - b.sortOrder);
+            const idx = list.findIndex(x => x.id === id);
+            if (idx === -1) return;
+            const targetIdx = idx + dir;
+            if (targetIdx < 0 || targetIdx >= list.length) return;
+            const a = list[idx], b = list[targetIdx];
+            const aOrder = a.sortOrder, bOrder = b.sortOrder;
+            const [{ error: err1 }, { error: err2 }] = await Promise.all([
+                sb.from('faqs').update({ sort_order: bOrder }).eq('id', a.id),
+                sb.from('faqs').update({ sort_order: aOrder }).eq('id', b.id)
+            ]);
+            if (err1 || err2) { showToast("Gagal mengubah urutan FAQ.", "error"); return; }
+            a.sortOrder = bOrder;
+            b.sortOrder = aOrder;
+            renderAdminFaqs();
+            renderFaqs();
         }
 
         async function openFaqModal() {
             const q = prompt("Pertanyaan FAQ:");
             const a = prompt("Jawaban FAQ:");
             if (q && a) {
-                const { error } = await sb.from('faqs').insert({ q, a });
+                const maxOrder = appData.faqs.reduce((m, f) => Math.max(m, f.sortOrder || 0), 0);
+                const { error } = await sb.from('faqs').insert({ q, a, sort_order: maxOrder + 1 });
                 if (error) { showToast("Gagal menambah FAQ.", "error"); return; }
                 await loadAppData();
                 renderFaqs();
