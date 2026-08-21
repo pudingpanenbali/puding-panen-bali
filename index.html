@@ -1230,9 +1230,9 @@
             </div>
 
             <div class="space-y-1">
-                <span class="text-xs font-bold uppercase tracking-widest text-sage-700">Pesanan Dikirim</span>
-                <h2 class="font-serif font-bold text-2xl text-brand-900">Pesanan Berhasil Dikirim! 🎉</h2>
-                <p class="text-xs text-brand-700 max-w-md mx-auto">Terima kasih telah memilih Puding Panen Bali. Pesanan Anda telah diterima sistem dan siap dikonfirmasi oleh Admin.</p>
+                <span class="text-xs font-bold uppercase tracking-widest text-sage-700">Satu Langkah Lagi</span>
+                <h2 class="font-serif font-bold text-2xl text-brand-900">Kirim Pesanan Anda ke Admin! 🎉</h2>
+                <p class="text-xs text-brand-700 max-w-md mx-auto">Data pesanan sudah tercatat di sistem kami. <strong>Pesanan baru akan diproses admin setelah Anda mengirim detail pesanan ini via WhatsApp</strong> -- kami tidak memantau pesanan secara otomatis dari website.</p>
             </div>
 
             <div class="bg-brand-50 p-4 rounded-2xl border border-brand-200 text-left space-y-2 text-xs">
@@ -1250,14 +1250,19 @@
                 </div>
             </div>
 
+            <div class="bg-amber-50 border border-amber-300 text-amber-900 rounded-xl px-3 py-2 text-[11px] font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Tab WhatsApp seharusnya sudah terbuka otomatis. Kalau belum muncul, klik tombol hijau di bawah ini.</span>
+            </div>
+
             <div class="space-y-3">
-                <a id="success-wa-btn" href="#" target="_blank" class="w-full py-4 bg-sage-700 hover:bg-sage-800 text-white font-bold rounded-2xl shadow-lg transition flex items-center justify-center gap-3 text-sm">
+                <a id="success-wa-btn" href="#" target="_blank" class="w-full py-4 bg-sage-700 hover:bg-sage-800 text-white font-bold rounded-2xl shadow-lg transition flex items-center justify-center gap-3 text-sm animate-pulse">
                     <i class="fa-brands fa-whatsapp text-xl"></i>
-                    <span>Hubungi Admin via WhatsApp Sekarang</span>
+                    <span>Kirim Detail Pesanan via WhatsApp</span>
                 </a>
-                
+
                 <button onclick="closeSuccessModalAndReset()" class="w-full py-3 bg-brand-100 hover:bg-brand-200 text-brand-900 text-xs font-bold rounded-xl">
-                    Kembali ke Beranda
+                    Sudah Terkirim, Kembali ke Beranda
                 </button>
             </div>
         </div>
@@ -2255,7 +2260,8 @@
                             <img src="${item.product.image}" class="w-16 h-16 object-cover rounded-xl border">
                             <div class="flex-1 min-w-0">
                                 <h4 class="font-serif font-bold text-xs sm:text-sm text-brand-900 truncate">${item.product.name}</h4>
-                                <p class="text-[10px] text-brand-600 font-semibold">${item.sizeName}</p>
+                                <span class="inline-block text-[9px] font-bold uppercase tracking-wide text-sage-800 bg-sage-100 border border-sage-300 rounded-full px-2 py-0.5 mt-0.5">${item.product.category || 'Kategori -'}</span>
+                                <p class="text-[10px] text-brand-600 font-semibold mt-0.5">${item.sizeName}</p>
                                 <p class="font-serif font-bold text-xs text-brand-800 mt-1">Rp ${item.unitPrice.toLocaleString('id-ID')}</p>
                             </div>
                             <button onclick="removeCartItem(${idx})" class="text-red-400 hover:text-red-600 text-xs self-start p-1"><i class="fa-solid fa-trash"></i></button>
@@ -2340,7 +2346,8 @@
                     <div class="flex items-center justify-between text-xs py-2 border-b border-brand-100">
                         <div class="min-w-0 flex-1 pr-2">
                             <p class="font-bold text-brand-900 truncate">${item.product.name} x${item.quantity}</p>
-                            <p class="text-[10px] text-brand-600">${item.sizeName}</p>
+                            <span class="inline-block text-[9px] font-bold uppercase tracking-wide text-sage-800 bg-sage-100 border border-sage-300 rounded-full px-2 py-0.5 mt-0.5">${item.product.category || 'Kategori -'}</span>
+                            <p class="text-[10px] text-brand-600 mt-0.5">${item.sizeName}</p>
                             ${item.addOns.length > 0 ? `<p class="text-[10px] text-brand-500">+ ${item.addOns.map(a => a.name).join(', ')}</p>` : ''}
                         </div>
                         <span class="font-bold text-brand-900">Rp ${(prodTotal + addTotal).toLocaleString('id-ID')}</span>
@@ -2428,7 +2435,7 @@
                 const lineTotal = (item.unitPrice + addSum) * item.quantity;
                 subtotal += lineTotal;
                 return {
-                    name: item.product.name, size: item.sizeName, qty: item.quantity,
+                    name: item.product.name, category: item.product.category || '-', size: item.sizeName, qty: item.quantity,
                     unitPrice: item.unitPrice, addOns: item.addOns.map(a => a.name), lineTotal
                 };
             });
@@ -2478,7 +2485,9 @@
             waLines.push(`*RINGKASAN ITEM:*`);
             itemsSummary.forEach((it, idx) => {
                 waLines.push(``);
-                waLines.push(`${idx + 1}. ${it.name} (${it.size}) x${it.qty}`);
+                waLines.push(`${idx + 1}. ${it.name} x${it.qty}`);
+                waLines.push(`   Kategori: ${it.category}`);
+                waLines.push(`   Varian: ${it.size}`);
                 waLines.push(`   Rp ${it.lineTotal.toLocaleString('id-ID')}`);
                 if (it.addOns.length > 0) waLines.push(`   + Addons: ${it.addOns.join(', ')}`);
             });
@@ -2503,6 +2512,16 @@
             document.getElementById('success-wa-btn').href = waUrl;
 
             document.getElementById('order-success-modal').classList.remove('hidden');
+
+            // Admin TIDAK memantau daftar order di website -- satu-satunya cara admin
+            // tahu ada pesanan baru adalah lewat WhatsApp. Jadi begitu order sukses
+            // disimpan, langsung buka tab WhatsApp secara otomatis (bukan menunggu
+            // customer klik tombolnya sendiri). Ini dipanggil langsung di dalam
+            // handler submit form (masih dalam "user gesture" yang sama dari klik
+            // tombol checkout), jadi browser tidak akan memblokirnya sebagai popup.
+            // Tombol manual di modal tetap ada sebagai cadangan kalau popup-nya
+            // tetap terblokir di browser tertentu.
+            window.open(waUrl, '_blank');
 
             cart = [];
             updateCartBadge();
@@ -2673,7 +2692,7 @@
                         <div>
                             <p class="font-bold text-brand-900 mb-1">Items Pesanan:</p>
                             <ul class="space-y-1 text-brand-800">
-                                ${ord.items.map(i => `<li>• ${i.name} (${i.size}) x${i.qty} - Rp ${i.lineTotal.toLocaleString('id-ID')}</li>`).join('')}
+                                ${ord.items.map(i => `<li>• ${i.name} <span class="font-bold text-sage-700">[${i.category || '-'}]</span> (${i.size}) x${i.qty} - Rp ${i.lineTotal.toLocaleString('id-ID')}</li>`).join('')}
                             </ul>
                             <p class="font-bold text-sm text-brand-900 border-t pt-2 mt-2">Total Amount: Rp ${ord.totalAmount.toLocaleString('id-ID')}</p>
                         </div>
