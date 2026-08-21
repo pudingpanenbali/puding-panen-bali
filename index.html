@@ -731,12 +731,18 @@
 
             <!-- ADMIN TAB 2: PRODUCTS -->
             <div id="admin-view-products" class="admin-subview hidden space-y-6">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between flex-wrap gap-2">
                     <h2 class="font-serif font-bold text-xl text-brand-900">Manajemen Produk</h2>
-                    <button onclick="openProductEditorModal()" class="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Tambah Produk Baru
-                    </button>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="bulkCompressProductImages()" title="Kompres ulang semua foto produk yang berukuran besar (>300KB) supaya katalog tidak lambat/gagal dimuat" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 rounded-xl text-xs font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-compress"></i> Kompres Foto Besar
+                        </button>
+                        <button onclick="openProductEditorModal()" class="px-4 py-2 bg-brand-800 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Tambah Produk Baru
+                        </button>
+                    </div>
                 </div>
+                <p class="text-[11px] text-brand-600 -mt-3">"Kompres Foto Besar" mencari foto produk yang masih berukuran besar (upload lama sebelum kompresi otomatis aktif) dan mengecilkannya. Setelah selesai, klik <strong>Simpan Semua Perubahan</strong> di atas untuk mengunggahnya.</p>
 
                 <div class="space-y-2" id="admin-products-list">
                     <!-- Populated dynamically, grouped by category -->
@@ -867,6 +873,7 @@
                                         <input type="file" accept="image/*" onchange="handleCmsImageUpload(event)" class="w-full text-xs text-brand-800 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-800 file:text-white">
                                     </div>
                                 </div>
+                                <button type="button" onclick="compressExistingHeroImage()" class="text-[11px] font-semibold text-amber-800 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-compress"></i> Kompres foto banner yang sekarang (kalau upload lama masih besar)</button>
                             </div>
                             <div>
                                 <label class="block font-bold text-brand-900 mb-2">3 Angka Trust Badge (di bawah tombol hero)</label>
@@ -1408,6 +1415,7 @@
 
     <!-- ==================== JAVASCRIPT APPLICATION CODE ==================== -->
     <script>
+
         // ================================================================
         // PUDING PANEN BALI — SUPABASE-BACKED APP
         // ================================================================
@@ -1641,7 +1649,7 @@
                 socialInstagram: row.social_instagram || "#",
                 socialFacebook: row.social_facebook || "#",
                 socialWhatsapp: row.social_whatsapp || "#",
-                adminWhatsappNumber: row.admin_whatsapp_number || "62"
+                adminWhatsappNumber: row.admin_whatsapp_number || "081999340111"
             };
         }
 
@@ -1879,7 +1887,13 @@
             if (waHero) waHero.href = waGreetingUrl;
         }
 
-        function sanitizePhoneForWa(phone) { return (phone || '').replace(/[^\d]/g, ''); }
+        function sanitizePhoneForWa(phone) {
+            let digits = (phone || '').replace(/[^\d]/g, '');
+            // Nomor Indonesia yang ditulis diawali "0" (misal 081999340111) harus
+            // diubah ke format internasional (6281999340111) supaya link wa.me valid.
+            if (digits.indexOf('0') === 0) digits = '62' + digits.slice(1);
+            return digits;
+        }
         function setText(id, val) { const el = document.getElementById(id); if (el && val !== undefined && val !== null) el.innerText = val; }
         function setHtml(id, val) { const el = document.getElementById(id); if (el) el.innerHTML = val; }
 
@@ -2480,7 +2494,7 @@
 
             const waText = waLines.join('\n');
 
-            const adminPhone = sanitizePhoneForWa(appData.siteContent.adminWhatsappNumber) || "62";
+            const adminPhone = sanitizePhoneForWa(appData.siteContent.adminWhatsappNumber) || sanitizePhoneForWa("081999340111");
             const waUrl = `https://wa.me/${adminPhone}?text=${encodeURIComponent(waText)}`;
 
             document.getElementById('success-order-id').innerText = newOrder.id;
@@ -2786,15 +2800,133 @@
 
         function closeAdminProductModal() { document.getElementById('admin-product-modal').classList.add('hidden'); }
 
-        function handleProductImageUpload(e) {
-            const file = e.target.files[0];
-            if (file) {
+        // Mengecilkan & mengompres foto sebelum disimpan sebagai base64, supaya
+        // ukuran data di database tetap kecil (foto asli dari HP bisa 3-10MB,
+        // yang kalau disimpan mentah-mentah bikin query produk jadi berat/timeout
+        // di Supabase saat semua foto diambil sekaligus). Hasil akhir: JPEG,
+        // lebar/tinggi maksimum `maxDim`, kualitas `quality`.
+        function compressImageFile(file, maxDim, quality) {
+            maxDim = maxDim || 1280;
+            quality = quality || 0.78;
+            return new Promise(function(resolve, reject) {
                 const reader = new FileReader();
                 reader.onload = function(evt) {
-                    document.getElementById('edit-prod-image').value = evt.target.result;
-                    showToast("Foto produk berhasil di-upload!");
+                    const img = new Image();
+                    img.onload = function() {
+                        let w = img.naturalWidth, h = img.naturalHeight;
+                        if (w > maxDim || h > maxDim) {
+                            if (w >= h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+                            else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        try {
+                            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                            resolve(dataUrl);
+                        } catch (err) {
+                            resolve(evt.target.result); // fallback: pakai hasil asli kalau canvas gagal
+                        }
+                    };
+                    img.onerror = function() { resolve(evt.target.result); };
+                    img.src = evt.target.result;
                 };
+                reader.onerror = reject;
                 reader.readAsDataURL(file);
+            });
+        }
+
+        function handleProductImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            compressImageFile(file, 1280, 0.78).then(function(dataUrl) {
+                document.getElementById('edit-prod-image').value = dataUrl;
+                showToast("Foto produk berhasil di-upload & dikompres!");
+            });
+        }
+
+        // Sama seperti compressImageFile, tapi inputnya string base64 (data URL)
+        // yang SUDAH tersimpan -- dipakai untuk mengecilkan ulang foto lama yang
+        // ter-upload sebelum kompresi otomatis aktif, tanpa perlu upload ulang file.
+        function compressBase64Image(dataUrl, maxDim, quality) {
+            maxDim = maxDim || 1280;
+            quality = quality || 0.78;
+            return new Promise(function(resolve) {
+                if (!dataUrl || typeof dataUrl !== 'string' || dataUrl.indexOf('data:image') !== 0) {
+                    resolve(dataUrl); // bukan base64 image (link URL biasa), biarkan apa adanya
+                    return;
+                }
+                const img = new Image();
+                img.onload = function() {
+                    let w = img.naturalWidth, h = img.naturalHeight;
+                    if (w > maxDim || h > maxDim) {
+                        if (w >= h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+                        else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    try {
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    } catch (err) {
+                        resolve(dataUrl);
+                    }
+                };
+                img.onerror = function() { resolve(dataUrl); };
+                img.src = dataUrl;
+            });
+        }
+
+        // Tombol admin "Kompres Foto Besar": cari semua produk yang fotonya masih
+        // besar (upload lama, sebelum kompresi otomatis aktif), lalu kompres ulang
+        // satu-satu. Hasilnya di-queue lewat queueUpdate seperti perubahan lain --
+        // baru benar-benar terupload ke Supabase setelah admin klik
+        // "Simpan Semua Perubahan", supaya alurnya tetap konsisten dengan fitur draft.
+        async function bulkCompressProductImages() {
+            const THRESHOLD = 300 * 1024; // ~300KB teks base64
+            const targets = appData.products.filter(function(p) {
+                return p.image && typeof p.image === 'string' && p.image.length > THRESHOLD;
+            });
+            if (targets.length === 0) {
+                showToast("Semua foto produk sudah berukuran kecil. Tidak ada yang perlu dikompres.");
+                return;
+            }
+            if (!confirm(`Ditemukan ${targets.length} foto produk berukuran besar. Kompres semuanya sekarang? (belum diunggah ke database sampai kamu klik "Simpan Semua Perubahan")`)) return;
+
+            showToast(`Mengompres ${targets.length} foto, mohon tunggu...`);
+            let done = 0;
+            for (const p of targets) {
+                try {
+                    const compressed = await compressBase64Image(p.image, 1280, 0.78);
+                    p.image = compressed;
+                    queueUpdate('products', p.id, { image: compressed });
+                    done++;
+                } catch (err) {
+                    console.error('Gagal kompres foto produk', p.name, err);
+                }
+            }
+            renderAdminProducts();
+            renderCatalog();
+            renderBestsellersHome();
+            showToast(`${done} dari ${targets.length} foto berhasil dikompres! Klik "Simpan Semua Perubahan" untuk mengunggah ke database.`);
+        }
+
+        // Tombol di CMS "Kompres foto banner yang sekarang": mengecilkan foto hero
+        // yang sudah tersimpan (misalnya upload lama yang masih berukuran besar)
+        // langsung di field-nya, tanpa perlu upload ulang filenya.
+        async function compressExistingHeroImage() {
+            const el = document.getElementById('cms-hero-img-url');
+            if (!el || !el.value) { showToast("Tidak ada foto banner untuk dikompres."); return; }
+            showToast("Mengompres foto banner, mohon tunggu...");
+            try {
+                const compressed = await compressBase64Image(el.value, 1600, 0.78);
+                el.value = compressed;
+                showToast('Foto banner berhasil dikompres. Klik "Terapkan Perubahan Konten" lalu "Simpan Semua Perubahan" untuk menyimpannya.');
+            } catch (err) {
+                console.error('Gagal kompres foto banner', err);
+                showToast("Gagal mengompres foto banner.");
             }
         }
 
@@ -3139,26 +3271,20 @@
 
         function handleCmsImageUpload(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    document.getElementById('cms-hero-img-url').value = evt.target.result;
-                    showToast("Banner media berhasil di-upload!");
-                };
-                reader.readAsDataURL(file);
-            }
+            if (!file) return;
+            compressImageFile(file, 1600, 0.78).then(function(dataUrl) {
+                document.getElementById('cms-hero-img-url').value = dataUrl;
+                showToast("Banner media berhasil di-upload & dikompres!");
+            });
         }
 
         function handleCmsLogoUpload(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    document.getElementById('cms-logo-url').value = evt.target.result;
-                    showToast("Logo berhasil di-upload!");
-                };
-                reader.readAsDataURL(file);
-            }
+            if (!file) return;
+            compressImageFile(file, 512, 0.85).then(function(dataUrl) {
+                document.getElementById('cms-logo-url').value = dataUrl;
+                showToast("Logo berhasil di-upload & dikompres!");
+            });
         }
 
         function handleSaveSiteContent(e) {
@@ -3287,6 +3413,7 @@
             downloadAnchor.click();
             downloadAnchor.remove();
         }
-</script>
+
+        </script>
 </body>
 </html>
